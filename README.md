@@ -1,0 +1,2 @@
+# Trading
+Algorithmics trading code
