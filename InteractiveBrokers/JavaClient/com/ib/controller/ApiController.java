@@ -495,7 +495,6 @@ public class ApiController implements EWrapper {
 
     	int reqId = m_reqId++;
     	m_topMktDataMap.put( reqId, handler);
-    	m_client.reqMarketDataType( MarketDataType.DELAYED );
     	m_client.reqMktData( reqId, contract, genericTickList, snapshot, regulatorySnapshot, Collections.emptyList() );
 		sendEOM();
     }
