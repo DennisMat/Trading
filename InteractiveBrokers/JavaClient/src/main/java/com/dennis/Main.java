@@ -35,9 +35,6 @@ public class Main  {
 	public static void main(String[] args) {
 		
 		
-		
-		
-		
 		// make initial connection to local host, port 7496, client id 0, no connection options
 		controller().connect( "127.0.0.1", 4002, 0, null );
 
@@ -56,9 +53,9 @@ public class Main  {
            
     	   TopMktDataAdapter m_stockListener = new TopMktDataAdapter() {
 	            @Override public void tickPrice(TickType tickType, double price, TickAttrib attribs) {
-	                //if (tickType == TickType.LAST || tickType == TickType.DELAYED_LAST) {
+	                if (tickType == TickType.LAST || tickType == TickType.DELAYED_LAST) {
 	                	System.out.println(" In ticker price= " + price);
-	               // }
+	                }
 	            }
 	        };
 	        
@@ -66,7 +63,7 @@ public class Main  {
        
 		controller().reqTopMktData(contract, "", false, false, m_stockListener);
 
-		try {			Thread.sleep(300000);		} catch (InterruptedException e) {}
+		try { Thread.sleep(300000);		} catch (InterruptedException e) {}
 
 		controller().disconnect();//disconnect
 		
@@ -130,7 +127,7 @@ public class Main  {
 
 	private static class Logger implements ILogger {
 		@Override public void log(final String str) {
-			System.out.println(" In log str = " + str);
+			//System.out.println(" In log str = " + str);
 		}
 	}
 	
