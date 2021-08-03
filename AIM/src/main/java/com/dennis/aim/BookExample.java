@@ -1,7 +1,7 @@
 package com.dennis.aim;
 
 
-public class Main {
+public class BookExample {
 	
 	
 	public static int stockOwned=500;
@@ -9,6 +9,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		
+		//Pages 64 to 71.
+		// only hard coded for 2 years.
 
 		int[] stockPrice= {8,5,4,5,8,10,8,5,4,5,8,//year 1
 				10,8,5,4,5,8,10,8,5,4,5,8,

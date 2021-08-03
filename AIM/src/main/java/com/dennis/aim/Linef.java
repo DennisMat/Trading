@@ -1,20 +1,20 @@
 package com.dennis.aim;
 
-public class Line {
+public class Linef {
 
-	// int range is -2,147,483,648 to +2,147,483,647
-	int stockPrice;
 
-	int stockValue;
-	int safe;
-	int cash;
-	int sharesBoughtSold;
-	int stockOwned;
-	int portfolioControl;
-	int buyOrSellAdvice;
-	int marketOrder;
-	int interest;
-	int portfolioValue;
+	float stockPrice;
+
+	float stockValue;
+	float safe;
+	float cash;
+	float sharesBoughtSold;
+	float stockOwned;
+	float portfolioControl;
+	float buyOrSellAdvice;
+	float marketOrder;
+	float interest;
+	float portfolioValue;
 	Action action;
 
 	enum Action {
@@ -23,7 +23,7 @@ public class Line {
 
 	public static void printHeader() {
 		String[] headers = { "Stock Price", "Stock Value", "Safe", "Cash", "Shares buy and sell", "Stock Owned",
-				"Portfolio Control", "Buy or Sell Advise", "Market Order", "Interest", "Portfolio Value", "Action" };
+				"Portfolio Control", "Buy or Sell Advise", "Market Order", "floaterest", "Portfolio Value", "Action" };
 		for (int i = 0; i < headers.length; i++) {
 			System.out.print(headers[i] + "\t");
 		}
@@ -40,17 +40,17 @@ public class Line {
 
 	}
 
-	public Line(int stockPrice, int prevSharesBoughtSold, int prevPortfolioControl, int prevMarketOrder,
-			Action prevAction, int prevInterest, int interest) {
+	public Linef(float stockPrice, float prevSharesBoughtSold, float prevPortfolioControl, float prevMarketOrder,
+			Action prevAction, float prevfloaterest, float interest) {
 
 		this.stockPrice = stockPrice;
-		this.stockOwned = BookExample.stockOwned;
+		this.stockOwned = ScanAll.stockOwned;
 
 		stockValue = this.stockOwned * stockPrice;
 
 		safe = stockValue / 10;
-		BookExample.cash += prevInterest + prevMarketOrder;
-		this.cash = BookExample.cash;
+		ScanAll.cash += prevfloaterest + prevMarketOrder;
+		this.cash = ScanAll.cash;
 
 		this.interest = interest;
 
@@ -71,7 +71,7 @@ public class Line {
 			action = Action.DO_NOTHING;
 		} else {
 
-			int quantityBuySell = Math.abs(safe - Math.abs(buyOrSellAdvice));
+			float quantityBuySell = Math.abs(safe - Math.abs(buyOrSellAdvice));
 
 			if (quantityBuySell > 100) {
 				marketOrder = quantityBuySell;
@@ -89,13 +89,13 @@ public class Line {
 				action = Action.BUY;
 			}
 			
-			BookExample.stockOwned += sharesBoughtSold;
-			this.stockOwned = BookExample.stockOwned;
+			ScanAll.stockOwned += sharesBoughtSold;
+			this.stockOwned = ScanAll.stockOwned;
 		}
 
 	}
 
-	public Line() {
+	public Linef() {
 		// TODO Auto-generated constructor stub
 	}
 
