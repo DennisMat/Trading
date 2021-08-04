@@ -2,6 +2,8 @@ package com.dennis.aim;
 
 public class Linef {
 
+	static float cashGlobal;
+	static float stockOwnedGlobal;
 
 	float stockPrice;
 
@@ -40,30 +42,29 @@ public class Linef {
 
 	}
 
+
 	public Linef(float stockPrice, float prevSharesBoughtSold, float prevPortfolioControl, float prevMarketOrder,
-			Action prevAction, float prevfloaterest, float interest) {
+			Action prevAction, float prevInterest, float interest) {
 
 		this.stockPrice = stockPrice;
-		this.stockOwned = ScanAll.stockOwned;
+		this.stockOwned = stockOwnedGlobal;
 
 		stockValue = this.stockOwned * stockPrice;
 
-		safe = stockValue / 10;
-		ScanAll.cash += prevfloaterest + prevMarketOrder;
-		this.cash = ScanAll.cash;
+		safe = Math.round(stockValue / 10);
+		cashGlobal += prevInterest + prevMarketOrder;
+		this.cash = cashGlobal;
 
 		this.interest = interest;
 
-		if (prevAction == Action.SELL) {
-			portfolioControl = prevPortfolioControl;
-		} else {
-			portfolioControl = prevPortfolioControl - prevMarketOrder / 2;
-		}
 
 		portfolioValue = stockValue + cash;
 
 		// if positive sell
-		buyOrSellAdvice = stockValue - portfolioControl;
+		buyOrSellAdvice = stockValue - prevPortfolioControl;
+		
+
+
 
 		// safe is like a threshold, only if abs (buyOrSellAdvice) is above safe you
 		// sell or buy
@@ -71,13 +72,13 @@ public class Linef {
 			action = Action.DO_NOTHING;
 		} else {
 
-			float quantityBuySell = Math.abs(safe - Math.abs(buyOrSellAdvice));
+			float potentialMarketorder = Math.abs(safe - Math.abs(buyOrSellAdvice));
 
-			if (quantityBuySell > 100) {
-				marketOrder = quantityBuySell;
+			if (potentialMarketorder > 100) {
+				marketOrder = potentialMarketorder;
 			}
 
-			sharesBoughtSold = quantityBuySell / stockPrice;
+			sharesBoughtSold = Math.round(potentialMarketorder / stockPrice);
 			
 			if (marketOrder == 0) {
 				action = Action.DO_NOTHING;
@@ -85,13 +86,23 @@ public class Linef {
 				action = Action.SELL;
 				sharesBoughtSold=-sharesBoughtSold;
 			} else if (buyOrSellAdvice < 0) {
-				marketOrder=-marketOrder;
+				//One could have used marketOrder=-marketOrder, here instead but we want rounded figures
+				//marketOrder=-marketOrder;
+				marketOrder= -Math.round(sharesBoughtSold *stockPrice);
 				action = Action.BUY;
 			}
 			
-			ScanAll.stockOwned += sharesBoughtSold;
-			this.stockOwned = ScanAll.stockOwned;
+			stockOwnedGlobal += sharesBoughtSold;
+			this.stockOwned = stockOwnedGlobal;
 		}
+		
+		if (action == Action.SELL) {
+			portfolioControl = prevPortfolioControl;
+		} else {
+			portfolioControl = prevPortfolioControl - marketOrder / 2;
+		}
+		
+		
 
 	}
 

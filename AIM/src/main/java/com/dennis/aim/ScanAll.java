@@ -19,7 +19,7 @@ public class ScanAll {
 
 	public static void main(String[] args) {
 
-		File directoryPath = new File("C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\comp");
+		File directoryPath = new File("C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\1year");
 		File filesList[] = directoryPath.listFiles();
 		for (File file : filesList) {
 			System.out.println("File name: " + file.getName());
@@ -60,24 +60,24 @@ public class ScanAll {
 		Linef lineInt = new Linef();
 
 		lineInt.stockPrice = stockPrice[0];
-		lineInt.stockValue = 5000;
-		lineInt.safe = 500;
+		lineInt.stockValue = stockOwned*stockPrice[0];
+		lineInt.safe = lineInt.stockValue/10;
 		lineInt.cash = cash;
 		lineInt.stockOwned = stockOwned;
-		lineInt.portfolioControl = 5000;
-		lineInt.portfolioValue = 10000;
+		lineInt.portfolioControl = lineInt.cash;
+		lineInt.portfolioValue = startingAmount;
 
-		//Line.printHeader();
-		// System.out.println();
-		 //lineInt.printValues();
-		//System.out.println();
+		Line.printHeader();
+		 System.out.println();
+		 lineInt.printValues();
+		System.out.println();
 
 		Linef prevLine = lineInt;
 		for (int i = 0; i < stockPrice.length; i++) {
 			Linef l = new Linef(stockPrice[i], prevLine.sharesBoughtSold, prevLine.portfolioControl,
 					prevLine.marketOrder, prevLine.action, prevLine.interest, interest);
-			 l.printValues();
-			 System.out.println();
+			// l.printValues();
+			// System.out.println();
 			prevLine = l;
 		}
 
