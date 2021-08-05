@@ -57,7 +57,7 @@ public class ScanAll {
 		cash=startingAmount/2;
 		stockOwned = Math.round(cash / stockPrice[0]);
 
-		Linef lineInt = new Linef();
+		Line lineInt = new Line();
 
 		lineInt.stockPrice = stockPrice[0];
 		lineInt.stockValue = stockOwned*stockPrice[0];
@@ -67,14 +67,14 @@ public class ScanAll {
 		lineInt.portfolioControl = lineInt.cash;
 		lineInt.portfolioValue = startingAmount;
 
-		Line.printHeader();
+		LineInteger.printHeader();
 		 System.out.println();
 		 lineInt.printValues();
 		System.out.println();
 
-		Linef prevLine = lineInt;
+		Line prevLine = lineInt;
 		for (int i = 0; i < stockPrice.length; i++) {
-			Linef l = new Linef(stockPrice[i], prevLine.sharesBoughtSold, prevLine.portfolioControl,
+			Line l = new Line(lineInt.stockOwned, lineInt.cash, stockPrice[i], prevLine.sharesBoughtSold, prevLine.portfolioControl,
 					prevLine.marketOrder, prevLine.action, prevLine.interest, interest);
 			// l.printValues();
 			// System.out.println();

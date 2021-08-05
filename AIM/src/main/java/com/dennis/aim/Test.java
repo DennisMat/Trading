@@ -16,33 +16,20 @@ public class Test {
 		float[] expectedCash = { 5000, 5022, 4441, 2316, 358, 360, 3771.5f, 6063, 6090, 3390, 781, 784 };
 		float startingAmount = 10000;
 
-		Linef lineInt = new Linef();
-
-		Linef.cashGlobal = startingAmount / 2;
-		Linef.stockOwnedGlobal = Math.round(Linef.cashGlobal / stockPrice[0]);
-
-		lineInt.stockPrice = stockPrice[0];
-		lineInt.stockOwned = Linef.stockOwnedGlobal;
-		lineInt.stockValue = lineInt.stockOwned * stockPrice[0];
-		lineInt.safe = lineInt.stockValue / 10;
-		lineInt.cash = Linef.cashGlobal;
-
-		lineInt.portfolioControl = Linef.cashGlobal;
-		lineInt.portfolioValue = startingAmount;
-		lineInt.interest = interest[0];
+		Line lineFirst = Line.getFirstLine(stockPrice[0],startingAmount,interest[0]);
 
 		//Linef.printHeader();
-		//System.out.println();
-		// lineInt.printValues();
-		//System.out.println();
+//		System.out.println();
+//		 lineFirst.printValues();
+//		System.out.println();
 
-		Linef prevLine = lineInt;
+		Line prevLine = lineFirst;
 		boolean testsPassed=true;
 		for (int i = 1; i < interest.length; i++) {
-			Linef l = new Linef(stockPrice[i], prevLine.sharesBoughtSold, prevLine.portfolioControl,
+			Line l = new Line(prevLine.stockOwned,prevLine.cash, stockPrice[i], prevLine.sharesBoughtSold, prevLine.portfolioControl,
 					prevLine.marketOrder, prevLine.action, prevLine.interest, interest[i]);
-			// l.printValues();
-			// System.out.println();
+			 //l.printValues();
+			 System.out.println();
 			if (expectedPortfolioValues[i] != l.portfolioValue || expectedCash[i] != l.cash) {
 				System.out.println("TEST FAILED on record " + i);
 				testsPassed=false;

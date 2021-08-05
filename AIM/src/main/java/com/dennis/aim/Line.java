@@ -2,19 +2,18 @@ package com.dennis.aim;
 
 public class Line {
 
-	// int range is -2,147,483,648 to +2,147,483,647
-	int stockPrice;
+	float stockPrice;
 
-	int stockValue;
-	int safe;
-	int cash;
+	float stockValue;
+	float safe;
+	float cash;
 	int sharesBoughtSold;
 	int stockOwned;
-	int portfolioControl;
-	int buyOrSellAdvice;
-	int marketOrder;
-	int interest;
-	int portfolioValue;
+	float portfolioControl;
+	float buyOrSellAdvice;
+	float marketOrder;
+	float interest;
+	float portfolioValue;
 	Action action;
 
 	enum Action {
@@ -23,7 +22,7 @@ public class Line {
 
 	public static void printHeader() {
 		String[] headers = { "Stock Price", "Stock Value", "Safe", "Cash", "Shares buy and sell", "Stock Owned",
-				"Portfolio Control", "Buy or Sell Advise", "Market Order", "Interest", "Portfolio Value", "Action" };
+				"Portfolio Control", "Buy or Sell Advise", "Market Order", "interest", "Portfolio Value", "Action" };
 		for (int i = 0; i < headers.length; i++) {
 			System.out.print(headers[i] + "\t");
 		}
@@ -40,30 +39,28 @@ public class Line {
 
 	}
 
-	public Line(int stockPrice, int prevSharesBoughtSold, int prevPortfolioControl, int prevMarketOrder,
-			Action prevAction, int prevInterest, int interest) {
+
+	public Line(int prevStocksOwned,float prevCash, float stockPrice, float prevSharesBoughtSold, float prevPortfolioControl, float prevMarketOrder,
+			Action prevAction, float prevInterest, float interest) {
 
 		this.stockPrice = stockPrice;
-		this.stockOwned = BookExample.stockOwned;
+		this.stockOwned = prevStocksOwned;
 
 		stockValue = this.stockOwned * stockPrice;
 
-		safe = stockValue / 10;
-		BookExample.cash += prevInterest + prevMarketOrder;
-		this.cash = BookExample.cash;
+		safe = Math.round(stockValue / 10);
+		this.cash = prevCash+prevInterest + prevMarketOrder;
 
 		this.interest = interest;
 
-		if (prevAction == Action.SELL) {
-			portfolioControl = prevPortfolioControl;
-		} else {
-			portfolioControl = prevPortfolioControl - prevMarketOrder / 2;
-		}
 
 		portfolioValue = stockValue + cash;
 
 		// if positive sell
-		buyOrSellAdvice = stockValue - portfolioControl;
+		buyOrSellAdvice = stockValue - prevPortfolioControl;
+		
+
+
 
 		// safe is like a threshold, only if abs (buyOrSellAdvice) is above safe you
 		// sell or buy
@@ -71,13 +68,13 @@ public class Line {
 			action = Action.DO_NOTHING;
 		} else {
 
-			int quantityBuySell = Math.abs(safe - Math.abs(buyOrSellAdvice));
+			float potentialMarketorder = Math.abs(safe - Math.abs(buyOrSellAdvice));
 
-			if (quantityBuySell > 100) {
-				marketOrder = quantityBuySell;
+			if (potentialMarketorder > 100) {
+				marketOrder = potentialMarketorder;
+				sharesBoughtSold = Math.round(potentialMarketorder / stockPrice);
 			}
 
-			sharesBoughtSold = quantityBuySell / stockPrice;
 			
 			if (marketOrder == 0) {
 				action = Action.DO_NOTHING;
@@ -85,18 +82,60 @@ public class Line {
 				action = Action.SELL;
 				sharesBoughtSold=-sharesBoughtSold;
 			} else if (buyOrSellAdvice < 0) {
-				marketOrder=-marketOrder;
+				//One could have used marketOrder=-marketOrder, here instead but we want rounded figures
+				//marketOrder=-marketOrder;
+				marketOrder= -Math.round(sharesBoughtSold *stockPrice);
 				action = Action.BUY;
 			}
 			
-			BookExample.stockOwned += sharesBoughtSold;
-			this.stockOwned = BookExample.stockOwned;
+			this.stockOwned += sharesBoughtSold;
+			//this.stockOwned = stockOwnedGlobal;
 		}
+		
+		if (action == Action.SELL) {
+			portfolioControl = prevPortfolioControl;
+		} else {
+			portfolioControl = prevPortfolioControl - marketOrder / 2;
+		}
+		
+		
 
 	}
 
 	public Line() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	public static Line getFirstLine(float startingStockPrice, float startingAmount, float startingInterest) {
+		Line lineFirst = new Line();
+
+		lineFirst.cash = startingAmount / 2;
+
+		lineFirst.stockPrice = startingStockPrice;
+		lineFirst.stockOwned = Math.round(lineFirst.cash/ startingStockPrice);
+		lineFirst.stockValue = lineFirst.stockOwned * startingStockPrice;
+		lineFirst.safe = lineFirst.stockValue / 10;
+		lineFirst.cash = lineFirst.cash;
+
+		lineFirst.portfolioControl = lineFirst.cash;
+		lineFirst.portfolioValue = startingAmount;
+		lineFirst.interest = startingInterest;
+		return lineFirst;
+	}
+	
+	public static Line getFirstLine(float startingStockPrice, int startingStockOwned, float startingCash) {
+		Line lineFirst = new Line();
+
+		lineFirst.cash = startingCash;
+
+		lineFirst.stockPrice = startingStockPrice;
+		lineFirst.stockOwned = startingStockOwned;
+		lineFirst.stockValue = lineFirst.stockOwned * startingStockPrice;
+		lineFirst.safe = lineFirst.stockValue / 10;
+
+		lineFirst.portfolioControl = lineFirst.cash;
+		lineFirst.portfolioValue = lineFirst.stockValue + lineFirst.cash;
+		return lineFirst;
 	}
 
 }

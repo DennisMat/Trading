@@ -27,7 +27,7 @@ public class BookExample {
 		
 		
 
-		Line lineInt = new Line();
+		LineInteger lineInt = new LineInteger();
 
 		lineInt.stockPrice = 10;
 		lineInt.stockValue = 5000;
@@ -46,16 +46,16 @@ public class BookExample {
 		
 		
 		
-		Line.printHeader();
+		LineInteger.printHeader();
 		System.out.println();
 		lineInt.printValues();
 		System.out.println();
 		
 		
-		Line prevLine=lineInt;
+		LineInteger prevLine=lineInt;
 		for(int i=0;i<interest.length;i++) {
 		//for(int i=0;i<2;i++) {
-			Line l= new Line(stockPrice[i], prevLine.sharesBoughtSold, prevLine.portfolioControl, prevLine.marketOrder,prevLine.action,
+			LineInteger l= new LineInteger(stockPrice[i], prevLine.sharesBoughtSold, prevLine.portfolioControl, prevLine.marketOrder,prevLine.action,
 					prevLine.interest,interest[i]);
 			l.printValues();
 			System.out.println();
