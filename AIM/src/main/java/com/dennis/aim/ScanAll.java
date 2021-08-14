@@ -10,19 +10,17 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
 public class ScanAll {
-	
-	public static final float startingAmount = 6000f;
+
+	public static final float startingAmount = 10000f;
 	public static int stockOwned;
 	public static float cash;
-
-
 
 	public static void main(String[] args) {
 
 		File directoryPath = new File("C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\1year");
 		File filesList[] = directoryPath.listFiles();
 		for (File file : filesList) {
-			System.out.println("File name: " + file.getName());
+			System.out.print("File name: " + file.getName());
 
 			List<Float> stockPriceList = new ArrayList<Float>();
 			Iterable<CSVRecord> records = null;
@@ -37,7 +35,8 @@ public class ScanAll {
 				if (!skipfirst) {
 					try {
 						stockPriceList.add(Float.parseFloat(record.get(1)));
-					} catch (NumberFormatException e) {}
+					} catch (NumberFormatException e) {
+					}
 				}
 				skipfirst = false;
 			}
@@ -53,31 +52,38 @@ public class ScanAll {
 
 	static void process(float[] stockPrice) {
 
-		float interest = -10;
-		cash=startingAmount/2;
+		float interest = -1;
+		cash = startingAmount / 2;
 		stockOwned = Math.round(cash / stockPrice[0]);
 
 		Line lineInt = new Line();
 
 		lineInt.stockPrice = stockPrice[0];
-		lineInt.stockValue = stockOwned*stockPrice[0];
-		lineInt.safe = lineInt.stockValue/10;
+		lineInt.stockValue = stockOwned * stockPrice[0];
+		lineInt.safe = lineInt.stockValue / 10;
 		lineInt.cash = cash;
 		lineInt.stockOwned = stockOwned;
 		lineInt.portfolioControl = lineInt.cash;
 		lineInt.portfolioValue = startingAmount;
 
-		LineInteger.printHeader();
-		 System.out.println();
-		 lineInt.printValues();
-		System.out.println();
+		boolean print = true;
+		print = false;
+
+		if (print) {
+			LineInteger.printHeader();
+			System.out.println();
+			lineInt.printValues();
+			System.out.println();
+		}
 
 		Line prevLine = lineInt;
 		for (int i = 0; i < stockPrice.length; i++) {
-			Line l = new Line(lineInt.stockOwned, lineInt.cash, stockPrice[i], prevLine.sharesBoughtSold, prevLine.portfolioControl,
-					prevLine.marketOrder, prevLine.action, prevLine.interest, interest);
-			// l.printValues();
-			// System.out.println();
+			Line l = new Line(prevLine.stockOwned, prevLine.cash, stockPrice[i], prevLine.sharesBoughtSold,
+					prevLine.portfolioControl, prevLine.marketOrder, prevLine.action, prevLine.interest, interest);
+			if (print) {
+				l.printValues();
+				System.out.println();
+			}
 			prevLine = l;
 		}
 
