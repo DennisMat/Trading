@@ -26,8 +26,8 @@ public class Test {
 		Line prevLine = lineFirst;
 		boolean testsPassed=true;
 		for (int i = 1; i < interest.length; i++) {
-			Line l = new Line(prevLine.stockOwned,prevLine.cash, stockPrice[i], prevLine.sharesBoughtSold, prevLine.portfolioControl,
-					prevLine.marketOrder, prevLine.action, prevLine.interest, interest[i]);
+
+			Line l = Line.getNewLine(prevLine, stockPrice[i], interest[i]);
 			 //l.printValues();
 			 System.out.println();
 			if (expectedPortfolioValues[i] != l.portfolioValue || expectedCash[i] != l.cash) {

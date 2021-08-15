@@ -1,5 +1,10 @@
 package com.dennis.aim;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.io.FileUtils;
+
 public class Line {
 
 	float stockPrice;
@@ -79,15 +84,17 @@ public class Line {
 
 			float potentialMarketorder = Math.abs(safe - Math.abs(buyOrSellAdvice));
 
-			/*
-			 * if (buyOrSellAdvice > 0) {// if sell make sure there are sufficient stocks to
-			 * sell if (stockValue < potentialMarketorder) { potentialMarketorder =
-			 * stockValue; } }
-			 * 
-			 * if (buyOrSellAdvice < 0) {// if buy make sure there is sufficient cash if
-			 * (this.cash < potentialMarketorder) { potentialMarketorder = this.cash; } }
-			 * 
-			 */
+			if (buyOrSellAdvice > 0) {// if sell make sure there are sufficient stocks to sell
+				if (stockValue < potentialMarketorder) {
+					potentialMarketorder = stockValue;
+				}
+			}
+
+			if (buyOrSellAdvice < 0) {// if buy make sure there is sufficient cash
+				if (this.cash < potentialMarketorder) {
+					potentialMarketorder = this.cash;
+				}
+			}
 
 			if (potentialMarketorder > 100) {
 				marketOrder = potentialMarketorder;
@@ -138,6 +145,20 @@ public class Line {
 		lineFirst.interest = startingInterest;
 		return lineFirst;
 	}
+	
+	public static Line getFirstLine(float[] stockPrices, float startingAmount, float startingInterest) {
+		float startingStockPrice = 0;
+	
+		for (int i = 0; i < stockPrices.length; i++) {
+			if(stockPrices[i]>0.2) {//sometimes the price is zero and these figures have to be skipped.
+				startingStockPrice=stockPrices[i];
+				break; 
+			}
+		}
+			
+			
+			return getFirstLine( startingStockPrice,  startingAmount,  startingInterest) ;
+	}
 
 	public static Line getFirstLine(float startingStockPrice, int startingStockOwned, float startingCash) {
 		Line lineFirst = new Line();
@@ -152,6 +173,45 @@ public class Line {
 		lineFirst.portfolioControl = lineFirst.cash;
 		lineFirst.portfolioValue = lineFirst.stockValue + lineFirst.cash;
 		return lineFirst;
+	}
+	
+	
+	static void processAllRows(float[] stockPrice, float startingAmount,float interest,boolean print) {
+
+		Line lineInt = Line.getFirstLine(stockPrice, startingAmount,  interest);
+
+	
+
+		if (print) {
+			LineInteger.printHeader();
+			System.out.println();
+			lineInt.printValues();
+			System.out.println();
+		}
+
+		Line prevLine = lineInt;
+		for (int i = 0; i < stockPrice.length; i++) {
+			Line l = getNewLine(prevLine, stockPrice[i], interest);
+			if (print) {
+				l.printValues();
+				System.out.println();
+			}
+			prevLine = l;
+
+		}
+
+		System.out.println("\tFinal Portfolio Value is \t" + prevLine.portfolioValue);
+		
+//		File output = new File(outputFile);
+//
+//		FileUtils.write(output, System.lineSeparator() + symbol + "\t" + (int) Math.ceil(prevLine.portfolioValue),
+//				StandardCharsets.UTF_8, true);
+
+	}
+
+	static Line getNewLine(Line prevLine, float stockPrice, float interest) {
+		return new Line(prevLine.stockOwned, prevLine.cash, stockPrice, prevLine.sharesBoughtSold,
+				prevLine.portfolioControl, prevLine.marketOrder, prevLine.action, prevLine.interest, interest);
 	}
 
 }
