@@ -21,11 +21,14 @@ public class OptionsScan {
 	public static final float startingAmount = 10000f;
 
 	static String outputFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\output.txt";
-	//static String rawDataFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\data.txt";
-	static String rawDataFile ="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\subset.txt";
-	// static String rawDataFile ="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\reduced_data.csv";
+	static String rawDataFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\data.txt";
 
 	public static void main(String[] args) throws IOException {
+
+//		 rawDataFile
+//		 ="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\subset.txt";
+		// rawDataFile
+		// ="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\reduced_data.csv";
 
 		String[] headers = { "UnderlyingSymbol", "UnderlyingPrice", "Flags", "OptionSymbol", "Blank", "Type",
 				"Expiration", "DataDate", "Strike", "Last", "Bid", "Ask", "Volume", "OpenInterest", "T1OpenInterest" };
@@ -41,6 +44,9 @@ public class OptionsScan {
 		long count = 0;
 		for (CSVRecord record : records) {
 			String optionSymbol = record.get(3);
+//			if(!optionSymbol.contentEquals("AAPL120601P00495000")) {
+//				continue;
+//			}
 			// System.out.println("Record count = " + count++);
 			if (h.containsKey(optionSymbol)) {
 				h.get(optionSymbol).add(record);
@@ -53,29 +59,31 @@ public class OptionsScan {
 		}
 
 		in.close();
-		System.out.println("----------------");
+		File output = new File(outputFile);
+		try {
+			output.delete();
+		} catch (Exception e) {
+		}
+
 		for (Entry<String, List<CSVRecord>> set : h.entrySet()) {
 
 			List<CSVRecord> l = set.getValue();
 
 			final float[] optionPrice = new float[l.size()];
 			final String[] dates = new String[l.size()];
-			
-			for(int i=0;i<l.size();i++) {
-				optionPrice[i] = Float.parseFloat(l.get(i).get(10));
-				dates[i]=l.get(i).get(7);
-			}
-			String symbol="symbol = \t" + set.getKey();
-			System.out.println(symbol);
-			File output = new File(outputFile);
 
-			FileUtils.write(output, System.lineSeparator() + symbol);
-			Line.processAllRows(dates,optionPrice,startingAmount,-1,true,outputFile);
-	
+			for (int i = 0; i < l.size(); i++) {
+				optionPrice[i] = Float.parseFloat(l.get(i).get(10));
+				dates[i] = l.get(i).get(7);
+			}
+			String symbol = "symbol = \t" + set.getKey();
+			System.out.println(symbol);
+
+			FileUtils.write(output, System.lineSeparator() + symbol, true);
+			Line.processAllRows(dates, optionPrice, startingAmount, -1, true, outputFile);
 
 		}
 
 	}
-
 
 }

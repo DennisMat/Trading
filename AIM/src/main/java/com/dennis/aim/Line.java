@@ -9,7 +9,7 @@ import org.apache.commons.io.FileUtils;
 public class Line {
 	
 	//sometimes the price is zero and these figures have to be skipped.
-	static final float MINIMUM_PRICE=0.2f; 
+	static final float MINIMUM_PRICE=0.001f; 
 
 	String date;
 	float stockPrice;
@@ -204,7 +204,7 @@ public class Line {
 		}
 
 		String finalPortfolioValue="\tFinal Portfolio Value is \t"+ (int) Math.ceil(prevLine.portfolioValue);
-		System.out.println(finalPortfolioValue);
+		//System.out.println(finalPortfolioValue);
 		if(outputFile!=null) {
 			File output = new File(outputFile);
 
