@@ -16,7 +16,7 @@ public class Test {
 		float[] expectedCash = { 5000, 5022, 4441, 2316, 358, 360, 3771.5f, 6063, 6090, 3390, 781, 784 };
 		float startingAmount = 10000;
 
-		Line lineFirst = Line.getFirstLine(stockPrice[0],startingAmount,interest[0]);
+		Line lineFirst = Line.getFirstLine("", stockPrice[0],startingAmount,interest[0]);
 
 		//Linef.printHeader();
 //		System.out.println();
@@ -27,9 +27,9 @@ public class Test {
 		boolean testsPassed=true;
 		for (int i = 1; i < interest.length; i++) {
 
-			Line l = Line.getNewLine(prevLine, stockPrice[i], interest[i]);
+			Line l = Line.getNewLine("", prevLine, stockPrice[i], interest[i]);
 			 //l.printValues();
-			 System.out.println();
+			// System.out.println();
 			if (expectedPortfolioValues[i] != l.portfolioValue || expectedCash[i] != l.cash) {
 				System.out.println("TEST FAILED on record " + i);
 				testsPassed=false;

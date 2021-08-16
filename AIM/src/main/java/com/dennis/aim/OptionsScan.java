@@ -21,8 +21,8 @@ public class OptionsScan {
 	public static final float startingAmount = 10000f;
 
 	static String outputFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\output.txt";
-	static String rawDataFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\data.txt";
-	// static String rawDataFile ="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\subset.txt";
+	//static String rawDataFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\data.txt";
+	static String rawDataFile ="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\subset.txt";
 	// static String rawDataFile ="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\reduced_data.csv";
 
 	public static void main(String[] args) throws IOException {
@@ -59,14 +59,18 @@ public class OptionsScan {
 			List<CSVRecord> l = set.getValue();
 
 			final float[] optionPrice = new float[l.size()];
-
-			int index = 0;
-			for (CSVRecord record : l) {
-				optionPrice[index++] = Float.parseFloat(record.get(10));
-				// System.out.println(record.get(10));
+			final String[] dates = new String[l.size()];
+			
+			for(int i=0;i<l.size();i++) {
+				optionPrice[i] = Float.parseFloat(l.get(i).get(10));
+				dates[i]=l.get(i).get(7);
 			}
-			System.out.println("symbol = " + set.getKey());
-			Line.processAllRows(optionPrice,startingAmount,-1,false);
+			String symbol="symbol = \t" + set.getKey();
+			System.out.println(symbol);
+			File output = new File(outputFile);
+
+			FileUtils.write(output, System.lineSeparator() + symbol);
+			Line.processAllRows(dates,optionPrice,startingAmount,-1,true,outputFile);
 	
 
 		}

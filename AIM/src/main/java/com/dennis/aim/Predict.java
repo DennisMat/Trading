@@ -61,7 +61,7 @@ public class Predict {
 				stockPriceForSellBuy -= incrementPrice;
 			}
 
-			l = Line.getNewLine(prevLine, stockPriceForSellBuy, interest);
+			l = Line.getNewLine("",prevLine, stockPriceForSellBuy, interest);
 			// l.printValues();
 			// System.out.println();
 			if (l.action == action || loopCount > 1000) {

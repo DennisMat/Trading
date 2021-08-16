@@ -2,6 +2,7 @@ package com.dennis.aim;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class ScanAll {
 	public static String rawDataFolder = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\1year";
 	public static boolean print = true;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		print = false;
 
 		File directoryPath = new File(rawDataFolder);
@@ -27,6 +28,7 @@ public class ScanAll {
 			System.out.print("File name: " + file.getName() + " ");
 
 			List<Float> stockPriceList = new ArrayList<Float>();
+			List<String> dateList = new ArrayList<String>();
 			Iterable<CSVRecord> records = null;
 			try {
 				Reader in = new FileReader(file);
@@ -39,6 +41,7 @@ public class ScanAll {
 				if (!skipfirst) {
 					try {
 						stockPriceList.add(Float.parseFloat(record.get(1)));
+						dateList.add(record.get(0));
 					} catch (NumberFormatException e) {
 					}
 				}
@@ -46,10 +49,14 @@ public class ScanAll {
 			}
 			final float[] stockPrice = new float[stockPriceList.size()];
 			int index = 0;
-			for (final Float value : stockPriceList) {
-				stockPrice[index++] = value;
+
+			final String[] dates = new String[stockPriceList.size()];
+			
+			for(int i=0;i<stockPriceList.size();i++) {
+				stockPrice[i] = stockPriceList.get(i);
+				dates[i]=dateList.get(i);
 			}
-			Line.processAllRows(stockPrice, startingAmount, -1, false);
+			Line.processAllRows(dates,stockPrice, startingAmount, -1, false,null);
 		}
 
 	}
