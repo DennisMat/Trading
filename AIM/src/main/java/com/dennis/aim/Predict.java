@@ -23,16 +23,16 @@ public class Predict {
 		int startingStockOwned = 225;
 
 		final float initialCash = 3072.64f;
-		float interest = -10;
+		float interest = -0;
 
-		final float incrementPrice = 0.1f;
+		final float incrementPrice = 0.2f;
 
 		Line lineFirst = Line.getFirstLine(initialStockPrice, startingStockOwned, initialCash);
 
-		// Line.printHeader();
-		System.out.println();
-		// lineFirst.printValues();
-		System.out.println();
+		lineFirst.printHeader();
+		//System.out.println();
+		 lineFirst.printValues();
+		//System.out.println();
 
 		Line prevLine = lineFirst;
 
@@ -62,7 +62,7 @@ public class Predict {
 			}
 
 			l = Line.getNewLine("",prevLine, stockPriceForSellBuy, interest);
-			// l.printValues();
+			 l.printValues();
 			// System.out.println();
 			if (l.action == action || loopCount > 1000) {
 				System.out.println(action + " Stock Price = " + l.stockPrice + " Quantity = " + l.sharesBoughtSold

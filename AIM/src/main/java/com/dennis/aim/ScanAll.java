@@ -16,16 +16,23 @@ public class ScanAll {
 
 	public static final float startingAmount = 10000f;
 
-	public static String rawDataFolder = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\1year";
+	public static String rawDataFolder = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\smallset";
+	public static String outputFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\smallset\\output.txt";
 	public static boolean print = true;
 
 	public static void main(String[] args) throws IOException {
 		print = false;
+		
+		File output = new File(outputFile);
+		try {
+			output.delete();
+		} catch (Exception e) {
+		}
 
 		File directoryPath = new File(rawDataFolder);
 		File filesList[] = directoryPath.listFiles();
 		for (File file : filesList) {
-			System.out.print("File name: " + file.getName() + " ");
+			System.out.print("File name: " + file.getName() + "\n");
 
 			List<Float> stockPriceList = new ArrayList<Float>();
 			List<String> dateList = new ArrayList<String>();
@@ -56,7 +63,8 @@ public class ScanAll {
 				stockPrice[i] = stockPriceList.get(i);
 				dates[i]=dateList.get(i);
 			}
-			Line.processAllRows(dates,stockPrice, startingAmount, -1, false,null);
+			FileUtils.write(output, System.lineSeparator() +"\n" + file.getName(), true);
+			Line.processAllRows(dates,stockPrice, startingAmount, -10, false,outputFile);
 		}
 
 	}

@@ -30,23 +30,55 @@ public class Line {
 		DO_NOTHING, BUY, SELL;
 	}
 
-	public static void printHeader() {
+	public  void writeHeader(String outputFile) throws IOException {
+		if(outputFile!=null) {
+			File output = new File(outputFile);
+			FileUtils.write(output, "\n"+getHeaderRow(),
+					StandardCharsets.UTF_8, true);
+		}
+		
+	}
+	
+	public  void printHeader() {
+			System.out.print("\n"+getHeaderRow());
+		
+	}
+
+	 String getHeaderRow() {
+		StringBuffer sb = new StringBuffer();
 		String[] headers = { "Date", "Stock Price", "Stock Value", "Safe", "Cash", "Shares buy and sell", "Stock Owned",
 				"Portfolio Control", "Buy or Sell Advise", "Market Order", "interest", "Portfolio Value", "Action" };
 		for (int i = 0; i < headers.length; i++) {
-			System.out.print(headers[i] + "\t");
+			sb.append(headers[i] + "\t");
+		}
+		
+		return sb.toString();
+	}
+	
+	public void printValues() {
+		if(action!=Action.DO_NOTHING) {
+			System.out.print("\n"+getRowValues());
 		}
 	}
+	
+	public void writeValues(String outputFile) throws IOException {
+		if(outputFile!=null && action!=Action.DO_NOTHING) {
+			File output = new File(outputFile);
+			FileUtils.write(output, "\n"+getRowValues(),
+					StandardCharsets.UTF_8, true);
+		}
+		
+	}
 
-	public void printValues() {
-
+	public String getRowValues() {
+		StringBuffer sb = new StringBuffer();
 		Object[] values = { date, stockPrice, stockValue, safe, cash, sharesBoughtSold, stockOwned, portfolioControl,
 				buyOrSellAdvice, marketOrder, interest, portfolioValue, action };
-
 		for (int i = 0; i < values.length; i++) {
-			System.out.print(values[i] + "\t");
+			sb.append(values[i] + "\t");
 		}
 
+		return sb.toString();
 	}
 
 	/**
@@ -108,6 +140,7 @@ public class Line {
 			}
 			if (marketOrder == 0) {
 				action = Action.DO_NOTHING;
+				this.interest =0;//no commission if shares are not 
 			} else if (buyOrSellAdvice > 0) {
 				action = Action.SELL;
 				sharesBoughtSold = -sharesBoughtSold;
@@ -120,7 +153,6 @@ public class Line {
 			}
 
 			this.stockOwned += sharesBoughtSold;
-			// this.stockOwned = stockOwnedGlobal;
 		}
 
 		if (action == Action.SELL) {
@@ -156,7 +188,7 @@ public class Line {
 		float startingStockPrice = 0;
 		String date=null;
 		for (int i = 0; i < stockPrices.length; i++) {
-			if(stockPrices[i]>MINIMUM_PRICE) {//0.2sometimes the price is zero and these figures have to be skipped.
+			if(stockPrices[i]>MINIMUM_PRICE) {//sometimes the price is zero and these figures have to be skipped.
 				startingStockPrice=stockPrices[i];
 				date=dates[i];
 				break; 
@@ -186,22 +218,24 @@ public class Line {
 	static void processAllRows(String dates[], float[] stockPrice, float startingAmount,float interest,boolean print, String outputFile) throws IOException {
 		Line lineInt = Line.getFirstLine(dates,stockPrice, startingAmount,  interest);
 		if (print) {
-			LineInteger.printHeader();
-			System.out.println();
+			lineInt.printHeader();
 			lineInt.printValues();
-			System.out.println();
 		}
+		lineInt.writeHeader(outputFile);
 
 		Line prevLine = lineInt;
 		for (int i = 0; i < stockPrice.length; i++) {
 			Line l = getNewLine(dates[i],prevLine, stockPrice[i], interest);
 			if (print) {
 				l.printValues();
+				
 				System.out.println();
 			}
 			prevLine = l;
-
+			l.writeValues(outputFile);
 		}
+		
+		
 
 		String finalPortfolioValue="\tFinal Portfolio Value is \t"+ (int) Math.ceil(prevLine.portfolioValue);
 		//System.out.println(finalPortfolioValue);
