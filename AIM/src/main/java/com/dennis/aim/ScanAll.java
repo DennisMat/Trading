@@ -16,13 +16,18 @@ public class ScanAll {
 
 	public static final float startingAmount = 10000f;
 
-	public static String rawDataFolder = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\smallset";
-	public static String outputFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\smallset\\output.txt";
+	public static String baseFolder="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles";
+	public static String rawDataFolder = baseFolder+"\\temp";
+	public static String outputFile = rawDataFolder+"\\temp\\output.txt";
+
+//	public static String rawDataFolder = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\penny";
+//	public static String outputFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\penny\\output.txt";
+
 	public static boolean print = true;
 
 	public static void main(String[] args) throws IOException {
-		print = false;
-		
+		print = true;
+
 		File output = new File(outputFile);
 		try {
 			output.delete();
@@ -58,13 +63,14 @@ public class ScanAll {
 			int index = 0;
 
 			final String[] dates = new String[stockPriceList.size()];
-			
-			for(int i=0;i<stockPriceList.size();i++) {
+
+			for (int i = 0; i < stockPriceList.size(); i++) {
 				stockPrice[i] = stockPriceList.get(i);
-				dates[i]=dateList.get(i);
+				dates[i] = dateList.get(i);
 			}
-			FileUtils.write(output, System.lineSeparator() +"\n" + file.getName(), true);
-			Line.processAllRows(dates,stockPrice, startingAmount, -10, false,outputFile);
+			Line.print = true;
+			FileUtils.write(output, System.lineSeparator() + "\n" + file.getName(), true);
+			Line.processAllRows(dates, stockPrice, startingAmount, -10, outputFile);
 		}
 
 	}

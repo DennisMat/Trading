@@ -73,6 +73,7 @@ public class OptionsScan {
 
 	static void crunchResults(Map<String, List<CSVRecord>> h, boolean print, String outputFile) throws IOException {
 
+		Line.print=true;
 		for (Entry<String, List<CSVRecord>> set : h.entrySet()) {
 
 			List<CSVRecord> l = set.getValue();
@@ -89,7 +90,7 @@ public class OptionsScan {
 
 			File output = new File(outputFile);
 			FileUtils.write(output, System.lineSeparator() + symbol, true);
-			Line.processAllRows(dates, optionPrice, startingAmount, 0, print, outputFile);
+			Line.processAllRows(dates, optionPrice, startingAmount, 0, outputFile);
 
 		}
 

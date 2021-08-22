@@ -13,9 +13,6 @@ import com.dennis.aim.Line.Action;
 
 public class Predict {
 
-	// public static final float startingAmount = 6000f;
-	// public static int stockOwned;
-	// public static float cash;
 //https://finance.yahoo.com/chart/POU.TO
 	public static void main(String[] args) {
 
@@ -30,18 +27,14 @@ public class Predict {
 		Line lineFirst = Line.getFirstLine(initialStockPrice, startingStockOwned, initialCash);
 
 		lineFirst.printHeader();
-		//System.out.println();
 		 lineFirst.printValues();
-		//System.out.println();
 
 		Line prevLine = lineFirst;
 
 		Line lastLine = findBuySellPrice(incrementPrice, prevLine, initialStockPrice, Action.SELL, interest);
 
 		lineFirst = Line.getFirstLine(initialStockPrice, startingStockOwned, initialCash);
-		// prevLine = lastLine;
-		// prevLine =lastLine;
-		// lineFirst.printValues();
+
 		System.out.println();
 		findBuySellPrice(incrementPrice, prevLine, prevLine.stockPrice, Action.BUY, interest);
 
