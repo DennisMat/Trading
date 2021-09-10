@@ -16,24 +16,24 @@ public class Predict {
 //https://finance.yahoo.com/chart/POU.TO
 	public static void main(String[] args) {
 
-		final float initialStockPrice = 14.33f;
-		int startingStockOwned = 225;
+		final float currentStockPrice = 29f;
+		int currentStocksOwned = 270;//
 
-		final float initialCash = 3072.64f;
+		final float currentCash = 7500;//
 		float interest = -0;
 
 		final float incrementPrice = 0.2f;
 
-		Line lineFirst = Line.getFirstLine(initialStockPrice, startingStockOwned, initialCash);
+		Line lineFirst = Line.getFirstLine(currentStockPrice, currentStocksOwned, currentCash);
 
-		lineFirst.printHeader();
-		 lineFirst.printValues();
+		//lineFirst.printHeader();
+		 //lineFirst.printValues();
 
 		Line prevLine = lineFirst;
 
-		Line lastLine = findBuySellPrice(incrementPrice, prevLine, initialStockPrice, Action.SELL, interest);
+		Line lastLine = findBuySellPrice(incrementPrice, prevLine, currentStockPrice, Action.SELL, interest);
 
-		lineFirst = Line.getFirstLine(initialStockPrice, startingStockOwned, initialCash);
+		lineFirst = Line.getFirstLine(currentStockPrice, currentStocksOwned, currentCash);
 
 		System.out.println();
 		findBuySellPrice(incrementPrice, prevLine, prevLine.stockPrice, Action.BUY, interest);

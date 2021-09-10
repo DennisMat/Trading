@@ -36,7 +36,7 @@ public class Line {
 	public void writeHeader(String outputFile) throws IOException {
 		if (outputFile != null) {
 			File output = new File(outputFile);
-			FileUtils.write(output, "\n" + getHeaderRow(), StandardCharsets.UTF_8, true);
+			//FileUtils.write(output, "\n" + getHeaderRow(), StandardCharsets.UTF_8, true);
 		}
 
 	}
@@ -50,8 +50,18 @@ public class Line {
 		StringBuffer sb = new StringBuffer();
 		String[] headers = { "Date", "Stock Price", "Stock Value", "Safe", "Cash", "Shares buy and sell", "Stock Owned", "Portfolio Control", "Buy or Sell Advise", "Market Order", "interest",
 				"Portfolio Value", "Action" };
+		
+		String[] headerLine2 = { "", "", "", "Stock Value/10", 
+				"", "", "", "Prev PortfolioControl - MarketOrder / 2", 
+				"StockValue - Prev PortfolioControl", "Buy & Sell - safe", "",
+				"", "" };
+		
 		for (int i = 0; i < headers.length; i++) {
 			sb.append(headers[i] + "\t");
+		}
+		sb.append("\n");
+		for (int i = 0; i < headerLine2.length; i++) {
+			sb.append(headerLine2[i] + "\t");
 		}
 
 		return sb.toString();
@@ -239,18 +249,17 @@ public class Line {
 		for (int i = 0; i < stockPrice.length; i++) {
 			Line l = getNewLine(dates[i], prevLine, stockPrice[i], interest);
 			if (print) {
-				l.printValues();
+			l.printValues();
 			}
-			l.writeValues(outputFile);
+			//l.writeValues(outputFile);
 			prevLine = l;
 			
 		}
 
-		String finalPortfolioValue = "\tLast stock value = "+ prevLine.stockPrice+".\nFinal Portfolio Value is \t" + (int) Math.ceil(prevLine.portfolioValue);
+		String finalPortfolioValue = "\tLast stock value = "+ prevLine.stockPrice+".Final Portfolio Value is \t" + (int) Math.ceil(prevLine.portfolioValue);
 		// System.out.println(finalPortfolioValue);
-		if (outputFile != null) {
+		if (outputFile != null && !outputFile.equals("")) {
 			File output = new File(outputFile);
-
 			FileUtils.write(output, finalPortfolioValue, StandardCharsets.UTF_8, true);
 		}
 

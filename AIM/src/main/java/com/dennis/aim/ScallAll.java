@@ -12,21 +12,25 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
 
-public class ScanAll {
+public class ScallAll {
 
 	public static final float startingAmount = 10000f;
 
-	public static String baseFolder="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles";
-	public static String rawDataFolder = baseFolder+"\\temp";
-	public static String outputFile = rawDataFolder+"\\temp\\output.txt";
+//	public static String baseFolder="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles";
+//	public static String rawDataFolder = baseFolder+"\\Canadian100Subset";
+//	public static String outputFile = rawDataFolder+"\\output.txt";
 
 //	public static String rawDataFolder = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\penny";
 //	public static String outputFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\penny\\output.txt";
+	
+	public static String baseFolder="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles";
+	public static String rawDataFolder = baseFolder+"\\india";
+	public static String outputFile = rawDataFolder+"\\output.txt";
 
-	public static boolean print = true;
+public static boolean print = true;
 
 	public static void main(String[] args) throws IOException {
-		print = true;
+		print = false;
 
 		File output = new File(outputFile);
 		try {
@@ -52,8 +56,13 @@ public class ScanAll {
 			for (CSVRecord record : records) {
 				if (!skipfirst) {
 					try {
+						//yahoo
 						stockPriceList.add(Float.parseFloat(record.get(1)));
 						dateList.add(record.get(0));
+						//india
+//						stockPriceList.add(Float.parseFloat(record.get(3)));
+//						dateList.add(record.get(2));
+						
 					} catch (NumberFormatException e) {
 					}
 				}
@@ -68,8 +77,9 @@ public class ScanAll {
 				stockPrice[i] = stockPriceList.get(i);
 				dates[i] = dateList.get(i);
 			}
-			Line.print = true;
-			FileUtils.write(output, System.lineSeparator() + "\n" + file.getName(), true);
+			//Line.print = true;
+			String symbol=file.getName().substring(0,file.getName().lastIndexOf("."));
+			FileUtils.write(output, System.lineSeparator() + "https://ca.finance.yahoo.com/quote/" +symbol+"?"+symbol, true);
 			Line.processAllRows(dates, stockPrice, startingAmount, -10, outputFile);
 		}
 

@@ -113,15 +113,13 @@ public class QuoteRepository {
 					System.out.println("exchange= " + exchange);
 					TopMktDataAdapter m_stockListener = new TopMktDataAdapter() {
 						@Override public void tickPrice(TickType tickType, double price, TickAttrib attribs) {
-							//if (tickType == TickType.LAST || tickType == TickType.DELAYED_LAST) {
-							System.out.println(" In ticker price= " + price);
-							// }
+							if (tickType == TickType.LAST || tickType == TickType.DELAYED_LAST) {
+							//System.out.println("In ticker price= " + price);
+							 }
 
 							long currentTime= System.currentTimeMillis();
 							Trading.lastChecked.set(0, currentTime);
 							QuoteRepository.extractQuotes(exchange,tickType, price, currentTime); 
-
-
 
 							/*
 										Runnable extractQuoteRunnable = new Runnable(){
