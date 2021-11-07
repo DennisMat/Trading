@@ -1,14 +1,5 @@
 package com.dennis.aim;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
-
 import com.dennis.aim.Line.Action;
 
 public class Predict {
@@ -16,36 +7,36 @@ public class Predict {
 //https://finance.yahoo.com/chart/POU.TO
 	public static void main(String[] args) {
 
-		final float currentStockPrice = 29f;
-		int currentStocksOwned = 270;//
+		final double currentStockPrice = 8.76f;
+		int currentStocksOwned = 1026;
+		double currentCash = 10000.8f;//
+		double interest = 0;
 
-		final float currentCash = 7500;//
-		float interest = -0;
+		double portfolioControl = 10000.05f;
 
-		final float incrementPrice = 0.2f;
+		final double incrementPrice = 0.01f;
 
-		Line lineFirst = Line.getFirstLine(currentStockPrice, currentStocksOwned, currentCash);
+		Line lineFirstA = Line.getFirstLine(currentStockPrice, currentStocksOwned, currentCash, portfolioControl);
 
-		//lineFirst.printHeader();
-		 //lineFirst.printValues();
+//		lineFirst.printHeader();
+//		lineFirst.printValues();
+		// System.out.println();
+		Line prevLineA = lineFirstA;
 
-		Line prevLine = lineFirst;
+		findBuySellPrice(incrementPrice, prevLineA, currentStockPrice, Action.SELL, interest);
+		// ---------------------Buy------------------------
 
-		Line lastLine = findBuySellPrice(incrementPrice, prevLine, currentStockPrice, Action.SELL, interest);
-
-		lineFirst = Line.getFirstLine(currentStockPrice, currentStocksOwned, currentCash);
-
+		Line lineFirstB = Line.getFirstLine(currentStockPrice, currentStocksOwned, currentCash, portfolioControl);
+		// lineFirstB.printValues();
 		System.out.println();
-		findBuySellPrice(incrementPrice, prevLine, prevLine.stockPrice, Action.BUY, interest);
-
-		// System.out.println("Final Portfolio Value is " + prevLine.portfolioValue);
+		Line prevLineB = lineFirstB;
+		findBuySellPrice(incrementPrice, prevLineB, prevLineB.stockPrice, Action.BUY, interest);
 
 	}
 
-	static Line findBuySellPrice(final float incrementPrice, Line prevLine, float stockPriceForSellBuy, Action action,
-			float interest) {
+	static Line findBuySellPrice(final double incrementPrice, Line prevLine, double stockPriceForSellBuy, Action action, double interest) {
 		Line l = null;
-		int loopCount = 0;
+		long loopCount = 0;
 		while (true) {
 			loopCount++;
 			if (action == Action.SELL) {
@@ -54,12 +45,12 @@ public class Predict {
 				stockPriceForSellBuy -= incrementPrice;
 			}
 
-			l = Line.getNewLine("",prevLine, stockPriceForSellBuy, interest);
-			 l.printValues();
-			// System.out.println();
-			if (l.action == action || loopCount > 1000) {
-				System.out.println(action + " Stock Price = " + l.stockPrice + " Quantity = " + l.sharesBoughtSold
-						+ ". Market order will be " + l.marketOrder);
+			l = Line.getNewLine("", prevLine, stockPriceForSellBuy, interest);
+			// l.printValues();
+
+			if (l.action == action || loopCount > 1000000000) {
+				System.out.println();
+				System.out.println(action + " Stock Price = " + l.stockPrice + " Quantity = " + l.sharesBoughtSold + ". Market order will be " + l.marketOrder);
 				break;
 			}
 			prevLine = l;

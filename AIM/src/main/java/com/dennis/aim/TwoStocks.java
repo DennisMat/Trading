@@ -14,8 +14,8 @@ import org.apache.commons.io.FileUtils;
 
 public class TwoStocks {
 
-	public static final float startingAmount = 5000f;
-	public static final float startingAmount1 = 5000f;
+	public static final double startingAmount = 5000f;
+	public static final double startingAmount1 = 5000f;
 
 
 
@@ -26,7 +26,7 @@ public static boolean print = true;
 
 
 	
-			final float[] stockPrice = {10,9,8,7,6,5,4,3,2,1};
+			final double[] stockPrice = {10,9,8,7,6,5,4,3,2,1};
 			String[] dates = {"","","","","","","","","","",""};
 			
 		
@@ -36,7 +36,7 @@ public static boolean print = true;
 			Line.processAllRows(dates, stockPrice, startingAmount, -10, "");
 
 			System.out.println("------------------");
-			final float[] stockPrice1 = {1,2,3,4,5,6,7,8,9,10};
+			final double[] stockPrice1 = {1,2,3,4,5,6,7,8,9,10};
 			
 			Line.processAllRows(dates, stockPrice1, startingAmount1, -10, "");
 

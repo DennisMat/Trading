@@ -14,7 +14,7 @@ import org.apache.commons.io.FileUtils;
 
 public class ScallAll {
 
-	public static final float startingAmount = 10000f;
+	public static final double startingAmount = 10000f;
 
 //	public static String baseFolder="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles";
 //	public static String rawDataFolder = baseFolder+"\\Canadian100Subset";
@@ -22,10 +22,14 @@ public class ScallAll {
 
 //	public static String rawDataFolder = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\penny";
 //	public static String outputFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\penny\\output.txt";
+//	
+//	public static String baseFolder="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles";
+//	public static String rawDataFolder = baseFolder+"\\temp";
+//	public static String outputFile = rawDataFolder+"\\output.txt";
 	
-	public static String baseFolder="C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles";
-	public static String rawDataFolder = baseFolder+"\\india";
-	public static String outputFile = rawDataFolder+"\\output.txt";
+	public static String baseFolder="C:\\dennis\\todo\\trades\\csvfiles\\CanadianREITS\\3months";
+	public static String outputFile = baseFolder+"\\output.txt";
+
 
 public static boolean print = true;
 
@@ -38,12 +42,12 @@ public static boolean print = true;
 		} catch (Exception e) {
 		}
 
-		File directoryPath = new File(rawDataFolder);
+		File directoryPath = new File(baseFolder);
 		File filesList[] = directoryPath.listFiles();
 		for (File file : filesList) {
 			System.out.print("File name: " + file.getName() + "\n");
 
-			List<Float> stockPriceList = new ArrayList<Float>();
+			List<Double> stockPriceList = new ArrayList<Double>();
 			List<String> dateList = new ArrayList<String>();
 			Iterable<CSVRecord> records = null;
 			try {
@@ -57,10 +61,10 @@ public static boolean print = true;
 				if (!skipfirst) {
 					try {
 						//yahoo
-						stockPriceList.add(Float.parseFloat(record.get(1)));
+						stockPriceList.add(Double.parseDouble(record.get(1)));
 						dateList.add(record.get(0));
 						//india
-//						stockPriceList.add(Float.parseFloat(record.get(3)));
+//						stockPriceList.add(double.parsedouble(record.get(3)));
 //						dateList.add(record.get(2));
 						
 					} catch (NumberFormatException e) {
@@ -68,7 +72,7 @@ public static boolean print = true;
 				}
 				skipfirst = false;
 			}
-			final float[] stockPrice = new float[stockPriceList.size()];
+			final double[] stockPrice = new double[stockPriceList.size()];
 			int index = 0;
 
 			final String[] dates = new String[stockPriceList.size()];

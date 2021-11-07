@@ -20,7 +20,7 @@ import org.apache.commons.io.FileUtils;
 
 public class OptionsScan {
 
-	public static final float startingAmount = 10000f;
+	public static final double startingAmount = 10000f;
 
 	public static void main(String[] args) throws IOException {
 		String outputFile = "C:\\Users\\Lenovo\\Desktop\\DeleteLater\\trades\\csvfiles\\options\\output.txt";
@@ -78,11 +78,11 @@ public class OptionsScan {
 
 			List<CSVRecord> l = set.getValue();
 
-			final float[] optionPrice = new float[l.size()];
+			final double[] optionPrice = new double[l.size()];
 			final String[] dates = new String[l.size()];
 
 			for (int i = 0; i < l.size(); i++) {
-				optionPrice[i] = Float.parseFloat(l.get(i).get(10));
+				optionPrice[i] = Double.parseDouble(l.get(i).get(10));
 				dates[i] = l.get(i).get(7);
 			}
 			String symbol = "symbol = \t" + set.getKey();

@@ -9,24 +9,24 @@ import org.apache.commons.io.FileUtils;
 public class Line {
 
 	// sometimes the price is zero and these figures have to be skipped.
-	static final float MINIMUM_PRICE = 0.001f;
+	static final double MINIMUM_PRICE = 0.001f;
 	static boolean isTest=false;
 	static boolean print=false;
 	static boolean writeToFile=false;
 
 	String date;
-	float stockPrice;
+	double stockPrice;
 
-	float stockValue;
-	float safe;
-	float cash;
-	int sharesBoughtSold;
-	int stockOwned;
-	float portfolioControl;
-	float buyOrSellAdvice;
-	float marketOrder;
-	float interest;
-	float portfolioValue;
+	double stockValue;
+	double safe;
+	double cash;
+	long sharesBoughtSold;
+	long stockOwned;
+	double portfolioControl;
+	double buyOrSellAdvice;
+	double marketOrder;
+	double interest;
+	double portfolioValue;
 	Action action;
 
 	enum Action {
@@ -103,8 +103,8 @@ public class Line {
 	 * 
 	 */
 
-	public Line(String date, int prevStocksOwned, float prevCash, float stockPrice, float prevSharesBoughtSold, float prevPortfolioControl, float prevMarketOrder, Action prevAction,
-			float prevInterest, float interest) {
+	public Line(String date, long prevStocksOwned, double prevCash, double stockPrice, double prevSharesBoughtSold, double prevPortfolioControl, double prevMarketOrder, Action prevAction,
+			double prevInterest, double interest) {
 
 		this.date = date;
 		this.stockPrice = stockPrice;
@@ -133,7 +133,7 @@ public class Line {
 			action = Action.DO_NOTHING;
 		} else {
 
-			float potentialMarketorder = Math.abs(safe - Math.abs(buyOrSellAdvice));
+			double potentialMarketorder = Math.abs(safe - Math.abs(buyOrSellAdvice));
 
 			if (buyOrSellAdvice > 0) {// if sell make sure there are sufficient stocks to sell
 				if (stockValue < potentialMarketorder) {
@@ -191,7 +191,7 @@ public class Line {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static Line getFirstLine(String date, float startingStockPrice, float startingAmount, float startingInterest) {
+	public static Line getFirstLine(String date, double startingStockPrice, double startingAmount, double startingInterest) {
 		Line lineFirst = new Line();
 
 		lineFirst.cash = startingAmount / 2;
@@ -208,8 +208,8 @@ public class Line {
 		return lineFirst;
 	}
 
-	public static Line getFirstLine(String dates[], float[] stockPrices, float startingAmount, float startingInterest) {
-		float startingStockPrice = 0;
+	public static Line getFirstLine(String dates[], double[] stockPrices, double startingAmount, double startingInterest) {
+		double startingStockPrice = 0;
 		String date = null;
 		for (int i = 0; i < stockPrices.length; i++) {
 			if (stockPrices[i] > MINIMUM_PRICE) {// sometimes the price is zero and these figures have to be skipped.
@@ -222,7 +222,7 @@ public class Line {
 		return getFirstLine(date, startingStockPrice, startingAmount, startingInterest);
 	}
 
-	public static Line getFirstLine(float startingStockPrice, int startingStockOwned, float startingCash) {
+	public static Line getFirstLine(double startingStockPrice, int startingStockOwned, double startingCash, double portfolioControl) {
 		Line lineFirst = new Line();
 
 		lineFirst.cash = startingCash;
@@ -232,12 +232,12 @@ public class Line {
 		lineFirst.stockValue = lineFirst.stockOwned * startingStockPrice;
 		lineFirst.safe = lineFirst.stockValue / 10;
 
-		lineFirst.portfolioControl = lineFirst.cash;
+		lineFirst.portfolioControl = portfolioControl;
 		lineFirst.portfolioValue = lineFirst.stockValue + lineFirst.cash;
 		return lineFirst;
 	}
 
-	static void processAllRows(String dates[], float[] stockPrice, float startingAmount, float interest, String outputFile) throws IOException {
+	static void processAllRows(String dates[], double[] stockPrice, double startingAmount, double interest, String outputFile) throws IOException {
 		Line lineInt = Line.getFirstLine(dates, stockPrice, startingAmount, interest);
 		if (print) {
 			lineInt.printHeader();
@@ -249,7 +249,7 @@ public class Line {
 		for (int i = 0; i < stockPrice.length; i++) {
 			Line l = getNewLine(dates[i], prevLine, stockPrice[i], interest);
 			if (print) {
-			l.printValues();
+				l.printValues();
 			}
 			//l.writeValues(outputFile);
 			prevLine = l;
@@ -265,7 +265,7 @@ public class Line {
 
 	}
 
-	static Line getNewLine(String date, Line prevLine, float stockPrice, float interest) {
+	static Line getNewLine(String date, Line prevLine, double stockPrice, double interest) {
 
 		if (stockPrice < MINIMUM_PRICE) {
 			prevLine.date = date;
