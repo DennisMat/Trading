@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--IMPORTANT!-->
+   <!--Dennis Mathew: The contents of this file have to be put into the deployment server Tomcat\conf\context.xml
+   This file is not included in the deployment war file.
+   Explaination:
+   If this file is included in the deployment war file then the contents of this file is copied to tomcat\conf\Catalina\localhost\ccrs2_webservice.xml 
+   If that file is manually modified then ideally the file should not be overwritten by tomcat for future deployments but it appears that atleast some version of tomcat have a bug where the ccrs2_webservice.xml is always overwritten incase of a new deployment.
+   --> 
+<Context>
+
+				
+		<Resource name="jdbc/propertydb"
+	auth="Container" 
+	type="javax.sql.DataSource"
+	driverClassName="org.postgresql.Driver"
+	username="postgres" 
+	password="admin" 
+	url="jdbc:postgresql://localhost:5432/postgres" 
+	maxIdle="2" 
+	maxWait="5000" 
+	logAbandoned="true" 
+	removeAbandoned="true" 
+	removeAbandonedTimeout="60"
+	validationQuery="select 1" 
+	maxActive="5"/> 
+	
+	<!--Dennis Mathew: override is false by default, but is specified explicitly.
+	This mean that context.xml in META-INF will NOT override 
+	ccrs2_webservice.xml in ..\conf\Catalina\localhost\ -->
+	<Parameter name="va_engine_properties_file_path" value="application.properties" override="false"/>
+
+</Context>

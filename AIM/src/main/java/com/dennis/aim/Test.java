@@ -18,16 +18,16 @@ public class Test {
 		
 		Line.isTest=true;
 		
-		Line lineFirst = Line.getFirstLine("", stockPrice[0],startingAmount,interest[0]);
+		//Line lineFirst = Line.getFirstLine("", stockPrice[0],startingAmount,interest[0]);
 
 
 //		System.out.println();
-		 lineFirst.printValues();
+		// lineFirst.printValues();
 		System.out.println();
 
-		Line prevLine = lineFirst;
+		Line prevLine = Line.getLine("", stockPrice[0],startingAmount,0);
 		boolean testsPassed=true;
-		for (int i = 1; i < interest.length; i++) {
+		for (int i = 0; i < interest.length; i++) {
 
 			Line l = Line.getNewLine("", prevLine, stockPrice[i], interest[i]);
 			 l.printValues();

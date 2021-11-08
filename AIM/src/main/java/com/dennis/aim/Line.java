@@ -114,11 +114,13 @@ public class Line {
 
 		safe = Math.round(stockValue / 10);
 
-		if (isTest || Math.abs(prevMarketOrder) > MINIMUM_PRICE) {
-			this.cash = prevCash + prevInterest + prevMarketOrder;
-		} else {
-			this.cash = prevCash;// interest has no effect if the previous order was 0
-		}
+		this.cash = prevCash + prevInterest + prevMarketOrder;
+		
+//		if (isTest || Math.abs(prevMarketOrder) > MINIMUM_PRICE) {
+//			this.cash = prevCash + prevInterest + prevMarketOrder;
+//		} else {
+//			this.cash = prevCash;// interest has no effect if the previous order was 0
+//		}
 
 		this.interest = interest;
 
@@ -191,9 +193,10 @@ public class Line {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static Line getFirstLine(String date, double startingStockPrice, double startingAmount, double startingInterest) {
+	public static Line getLine(String date, double startingStockPrice, double startingAmount, double startingInterest) {
 		Line lineFirst = new Line();
 
+		lineFirst.date = date;
 		lineFirst.cash = startingAmount / 2;
 
 		lineFirst.stockPrice = startingStockPrice;
@@ -208,7 +211,7 @@ public class Line {
 		return lineFirst;
 	}
 
-	public static Line getFirstLine(String dates[], double[] stockPrices, double startingAmount, double startingInterest) {
+	public static Line getLine(String dates[], double[] stockPrices, double startingAmount, double startingInterest) {
 		double startingStockPrice = 0;
 		String date = null;
 		for (int i = 0; i < stockPrices.length; i++) {
@@ -219,10 +222,10 @@ public class Line {
 			}
 		}
 
-		return getFirstLine(date, startingStockPrice, startingAmount, startingInterest);
+		return getLine(date, startingStockPrice, startingAmount, startingInterest);
 	}
 
-	public static Line getFirstLine(double startingStockPrice, int startingStockOwned, double startingCash, double portfolioControl) {
+	public static Line getLine(double startingStockPrice, int startingStockOwned, double startingCash, double portfolioControl) {
 		Line lineFirst = new Line();
 
 		lineFirst.cash = startingCash;
@@ -238,7 +241,7 @@ public class Line {
 	}
 
 	static void processAllRows(String dates[], double[] stockPrice, double startingAmount, double interest, String outputFile) throws IOException {
-		Line lineInt = Line.getFirstLine(dates, stockPrice, startingAmount, interest);
+		Line lineInt = Line.getLine(dates, stockPrice, startingAmount, interest);
 		if (print) {
 			lineInt.printHeader();
 			lineInt.printValues();

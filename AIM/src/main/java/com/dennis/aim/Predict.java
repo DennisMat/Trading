@@ -16,7 +16,7 @@ public class Predict {
 
 		final double incrementPrice = 0.01f;
 
-		Line lineFirstA = Line.getFirstLine(currentStockPrice, currentStocksOwned, currentCash, portfolioControl);
+		Line lineFirstA = Line.getLine(currentStockPrice, currentStocksOwned, currentCash, portfolioControl);
 
 //		lineFirst.printHeader();
 //		lineFirst.printValues();
@@ -26,7 +26,7 @@ public class Predict {
 		findBuySellPrice(incrementPrice, prevLineA, currentStockPrice, Action.SELL, interest);
 		// ---------------------Buy------------------------
 
-		Line lineFirstB = Line.getFirstLine(currentStockPrice, currentStocksOwned, currentCash, portfolioControl);
+		Line lineFirstB = Line.getLine(currentStockPrice, currentStocksOwned, currentCash, portfolioControl);
 		// lineFirstB.printValues();
 		System.out.println();
 		Line prevLineB = lineFirstB;
