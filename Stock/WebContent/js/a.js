@@ -25,6 +25,7 @@ function fillStockData(linesData){
 		//"bProcessing" : true,
 		"aaData" : linesData,
 
+		/*
 		"aoColumns" : [
 			{"sTitle": "Date", "mData" : "date"}, 
 			{"sTitle": "Stock Price", "mData" : "stockPrice"}, 
@@ -36,7 +37,25 @@ function fillStockData(linesData){
 			{"defaultContent" : '<button id="editParking">Edit</button>'} 
 			
 			],
+			
+			
+			*/
 
+		"aoColumns" : [
+			{"sTitle": "Date", "mData" : "date"}, 
+			{"sTitle"  :"Stock Price","mData" : "stockPrice"},
+			{"sTitle"  : "Stock Value","mData" : "stockValue"},
+			{"sTitle"  : "Safe","mData" : "safe"},
+			{"sTitle"  : "Cash","mData" : "cash"},
+			{"sTitle"  : "Shares buy and sell","mData" : "sharesBoughtSold"},
+			{"sTitle"  : "Stock Owned","mData" : "stockOwned"},
+			{"sTitle"  : "Portfolio Control","mData" : "portfolioControl"},
+			{"sTitle"  : "Buy or Sell Advise","mData" : "buyOrSellAdvice"},
+			{"sTitle"  : "Market Order","mData" : "marketOrder"},
+			{"sTitle"  : "interest","mData" : "interest"},
+			{"sTitle"  : "Portfolio Value","mData" : "portfolioValue"},
+			{"sTitle"  : "Action"}
+			],
 			dom : 'Bfrtip',
 			buttons : [ {
 				text : 'Add Parking',

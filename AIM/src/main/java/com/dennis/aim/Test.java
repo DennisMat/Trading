@@ -17,6 +17,7 @@ public class Test {
 		double startingAmount = 10000;
 		
 		Line.isTest=true;
+		Line.print=true;
 		
 		//Line lineFirst = Line.getFirstLine("", stockPrice[0],startingAmount,interest[0]);
 
