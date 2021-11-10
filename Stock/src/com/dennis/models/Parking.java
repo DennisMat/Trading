@@ -9,8 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import com.dennis.db.DB;
-import com.dennis.models.Line.Action;
+
 
 public class Parking {
 
@@ -29,7 +30,7 @@ public class Parking {
 		this.notes = notes;
 	}
 
-	public static List getLines() {
+	public static Map getLines() {
 
 		List l = new ArrayList();
 		Map h = new HashMap();
@@ -39,18 +40,20 @@ public class Parking {
 		List<Line> lines = new ArrayList<Line>();
 
 		lines.add(Line.getLine("2021-05-01", 10, 0, 22));
-
 		lines.add(Line.getLine("2021-05-02", 8, 0, 19));
 		lines.add(Line.getLine("2021-05-03", 5, 0, 10));
-		lines.add(Line.getLine("2021-05-04", 4, 0, 4));
-		lines.add(Line.getLine("2021-05-05", 8, 0, 17));
+		lines.add(Line.getLine("2021-05-04", 4, 0, 2));
+		lines.add(Line.getLine("2021-05-05", 5, 0, 2));
 
-		lines.add(Line.getLine("2021-05-06", 10, 0, 27));
-		lines.add(Line.getLine("2021-05-07", 5, 0, 42));
-		lines.add(Line.getLine("2021-05-08", 4, 0, 3));
-		lines.add(Line.getLine("2021-05-09", 8, 0, 27));
+		lines.add(Line.getLine("2021-05-06", 8, 0, 17));
+		lines.add(Line.getLine("2021-05-07", 10, 0, 27));
+		lines.add(Line.getLine("2021-05-08", 8, 0, 27));
+		lines.add(Line.getLine("2021-05-09", 5, 0, 15));
+		
+		lines.add(Line.getLine("2021-05-10", 1, 0, 3));
+		lines.add(Line.getLine("2021-05-11", 5, 0, 3));
+		lines.add(Line.getLine("2021-05-12", 8, 0, 24));
 
-		 
 		Line prevLine = Line.getLine("2021-04-30", 10, 10000, 0);
 
 
@@ -58,9 +61,28 @@ public class Parking {
 			Line li = Line.getNewLine(lines.get(i).date, prevLine, lines.get(i).stockPrice, lines.get(i).interest);
 			prevLine = li;
 			l.add(li);
+			
 		}
+		
+		Line lastLine=prevLine;
+		
+		h.put("history", l);
+		
 
-		return l;
+		final double incrementPrice = 0.01f;
+		
+		prevLine.interest=0;
+		
+		Line bp=Predict.findBuyLimit(lastLine, incrementPrice);
+
+		Line sp= Predict.findSellLimit(lastLine, incrementPrice);
+		
+		h.put("history", l);
+		h.put("buyPredict", bp);
+		h.put("sellPredict", sp);
+		
+		
+		return h;
 	}
 
 	public static List getParkings(long userId, long property_id, long apartment_id, boolean unAllocated) {

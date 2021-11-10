@@ -1,10 +1,10 @@
-package com.dennis.aim;
+package com.dennis.models;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dennis.aim.Line.Action;
-import com.dennis.models.Line;
+import com.dennis.models.Line.Action;
+
 
 
 public class Predict {

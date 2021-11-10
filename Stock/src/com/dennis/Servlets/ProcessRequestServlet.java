@@ -146,11 +146,8 @@ public class ProcessRequestServlet extends HttpServlet {
 
 			if (action.equals("get_stock_data")) {
 				
-			
-				
-				
 
-				List results = Parking.getLines();
+				Map results = Parking.getLines();
 				Util.sendResponseToClient(response, gson.toJson(results));
 
 			}

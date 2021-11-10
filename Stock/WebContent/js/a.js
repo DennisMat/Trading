@@ -21,9 +21,11 @@ function makeGrid(){
 
 function fillStockData(linesData){
 	
+	
+	
 	var stocksTable=$('#stocksTable').DataTable({
 		//"bProcessing" : true,
-		"aaData" : linesData,
+		"aaData" : linesData.history,
 
 		/*
 		"aoColumns" : [
@@ -54,7 +56,7 @@ function fillStockData(linesData){
 			{"sTitle"  : "Market Order","mData" : "marketOrder"},
 			{"sTitle"  : "interest","mData" : "interest"},
 			{"sTitle"  : "Portfolio Value","mData" : "portfolioValue"},
-			{"sTitle"  : "Action"}
+			{"sTitle"  : "Action","mData" : "action"}
 			],
 			dom : 'Bfrtip',
 			buttons : [ {
@@ -65,6 +67,12 @@ function fillStockData(linesData){
 			} ]
 	
 	});	
+	
+	var buyAdvice="Buy "+ linesData.buyPredict.sharesBoughtSold  +" shares for " + linesData.buyPredict.stockPrice 
+	var sellAdvice="Sell "+ linesData.sellPredict.sharesBoughtSold  +" shares for " + linesData.sellPredict.stockPrice 
+	
+	$( "#buyAdvice" ).text(buyAdvice);
+	$( "#sellAdvice" ).text(sellAdvice);
 
 }
 

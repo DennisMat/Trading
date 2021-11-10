@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 
-
-
-
 public class Line {
 
 	// sometimes the price is zero and these figures have to be skipped.
@@ -16,8 +13,8 @@ public class Line {
 	static boolean print=false;
 	static boolean writeToFile=false;
 
-	String date;
-	double stockPrice;
+	public String date;
+	public double stockPrice;
 
 	double stockValue;
 	double safe;
@@ -27,7 +24,7 @@ public class Line {
 	double portfolioControl;
 	double buyOrSellAdvice;
 	double marketOrder;
-	double interest;
+	public double interest;
 	double portfolioValue;
 	Action action;
 
@@ -70,9 +67,9 @@ public class Line {
 	}
 
 	public void printValues() {
-		if (action != Action.DO_NOTHING) {
+		//if (action != Action.DO_NOTHING) {
 			System.out.print("\n" + getRowValues());
-		}
+		//}
 	}
 
 	public void writeValues(String outputFile) throws IOException {
@@ -264,12 +261,11 @@ public class Line {
 		// System.out.println(finalPortfolioValue);
 		if (outputFile != null && !outputFile.equals("")) {
 			File output = new File(outputFile);
-			
 		}
 
 	}
 
-	static Line getNewLine(String date, Line prevLine, double stockPrice, double interest) {
+	public static Line getNewLine(String date, Line prevLine, double stockPrice, double interest) {
 
 		if (stockPrice < MINIMUM_PRICE) {
 			prevLine.date = date;
