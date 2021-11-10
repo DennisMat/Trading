@@ -16,7 +16,7 @@
 	<resource-ref>
 
 		<description>Posgress DataSource</description>
-		<res-ref-name>jdbc/propertydb</res-ref-name>
+		<res-ref-name>jdbc/serverpostgres</res-ref-name>
 		<res-type>javax.sql.DataSource</res-type>
 		<res-auth>Container</res-auth>
 

@@ -9,13 +9,13 @@
 <Context>
 
 				
-		<Resource name="jdbc/propertydb"
+		<Resource name="jdbc/serverpostgres"
 	auth="Container" 
 	type="javax.sql.DataSource"
 	driverClassName="org.postgresql.Driver"
 	username="postgres" 
 	password="admin" 
-	url="jdbc:postgresql://localhost:5432/postgres" 
+	url="jdbc:postgresql://localhost:5432/db_stock" 
 	maxIdle="2" 
 	maxWait="5000" 
 	logAbandoned="true" 

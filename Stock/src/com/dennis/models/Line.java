@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import com.dennis.models.Line.Action;
+
 
 public class Line {
 
@@ -96,7 +98,8 @@ public class Line {
 	 * cash = half of initial value safe= 10% of stock value
 	 * 
 	 * 
-	 * 1)buyOrSellAdvice = stockValue - previous portfolioControl, if positive sell 2) If buyOrSellAdvice> safe, only then act. 3) Marketorder = buyOrSellAdvice -safe 4) If sell, portfolio control
+	 * 1)buyOrSellAdvice = stockValue - previous portfolioControl, if positive sell 
+	 * 2)  * If buyOrSellAdvice> safe, only then act. 3) Marketorder = buyOrSellAdvice -safe 4) If sell, portfolio control
 	 * remains the same, else if buy newPortfolioControl = portfolioControl + marketOrder / 2;
 	 * 
 	 */
@@ -272,6 +275,50 @@ public class Line {
 			return prevLine;
 		}
 		return new Line(date, prevLine.stockOwned, prevLine.cash, stockPrice, prevLine.sharesBoughtSold, prevLine.portfolioControl, prevLine.marketOrder, prevLine.action, prevLine.interest, interest);
+	}
+	
+	
+
+
+	static void predict(Line lastLine, final double incrementPrice) {
+		findBuyLimit(lastLine, incrementPrice);
+		findSellLimit(lastLine, incrementPrice);
+	}
+
+
+	static Line findBuyLimit(Line lastLine, final double incrementPrice) {
+		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.BUY, lastLine.interest);
+		return l;
+	}
+
+	static Line findSellLimit(Line lastLine, final double incrementPrice) {
+		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.SELL, lastLine.interest);
+		return l;
+	}
+
+	static Line findBuySellPrice(final double incrementPrice, Line prevLine, double stockPriceForSellBuy, Action action, double interest) {
+		Line l = null;
+		long loopCount = 0;
+		while (true) {
+			loopCount++;
+			if (action == Action.SELL) {
+				stockPriceForSellBuy += incrementPrice;
+			} else {
+				stockPriceForSellBuy -= incrementPrice;
+			}
+
+			l = Line.getNewLine("", prevLine, stockPriceForSellBuy, interest);
+			// l.printValues();
+
+			if (l.action == action || loopCount > 1000000000) {
+				System.out.println();
+				System.out.println(action + " Stock Price = " + l.stockPrice + " Quantity = " + l.sharesBoughtSold + ". Market order will be " + l.marketOrder);
+				break;
+			}
+			//prevLine = l;
+		}
+
+		return l;
 	}
 
 }

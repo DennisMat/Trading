@@ -277,4 +277,45 @@ public class Line {
 		return new Line(date, prevLine.stockOwned, prevLine.cash, stockPrice, prevLine.sharesBoughtSold, prevLine.portfolioControl, prevLine.marketOrder, prevLine.action, prevLine.interest, interest);
 	}
 
+
+	static void predict(Line lastLine, final double incrementPrice) {
+		findBuyLimit(lastLine, incrementPrice);
+		findSellLimit(lastLine, incrementPrice);
+	}
+
+
+	static Line findBuyLimit(Line lastLine, final double incrementPrice) {
+		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.BUY, lastLine.interest);
+		return l;
+	}
+
+	static Line findSellLimit(Line lastLine, final double incrementPrice) {
+		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.SELL, lastLine.interest);
+		return l;
+	}
+
+	static Line findBuySellPrice(final double incrementPrice, Line prevLine, double stockPriceForSellBuy, Action action, double interest) {
+		Line l = null;
+		long loopCount = 0;
+		while (true) {
+			loopCount++;
+			if (action == Action.SELL) {
+				stockPriceForSellBuy += incrementPrice;
+			} else {
+				stockPriceForSellBuy -= incrementPrice;
+			}
+
+			l = Line.getNewLine("", prevLine, stockPriceForSellBuy, interest);
+
+			if (l.action == action || loopCount > 1000000000) {
+				System.out.println();
+				System.out.println(action + " Stock Price = " + l.stockPrice + " Quantity = " + l.sharesBoughtSold + ". Market order will be " + l.marketOrder);
+				break;
+			}
+
+		}
+
+		return l;
+	}
+
 }

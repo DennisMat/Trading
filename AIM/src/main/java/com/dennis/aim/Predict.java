@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dennis.aim.Line.Action;
-import com.dennis.models.Line;
+
 
 
 public class Predict {
@@ -29,63 +29,8 @@ public class Predict {
 		lastLine.portfolioControl=portfolioControl;
 		
 
-		calculate(lastLine, incrementPrice);
+		Line.predict(lastLine, incrementPrice);
 
 	}
 
-
-
-
-	static void calculate(Line lastLine, final double incrementPrice) {
-
-		findBuyLimit(lastLine, incrementPrice);
-
-		findSellLimit(lastLine, incrementPrice);
-		
-		
-	}
-
-
-
-
-	static Line findBuyLimit(Line lastLine, final double incrementPrice) {
-		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.SELL, lastLine.interest);
-		return l;
-	}
-
-
-
-
-	static Line findSellLimit(Line lastLine, final double incrementPrice) {
-		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.BUY, lastLine.interest);
-		return l;
-	}
-	
-	
-	
-
-	static Line findBuySellPrice(final double incrementPrice, Line prevLine, double stockPriceForSellBuy, Action action, double interest) {
-		Line l = null;
-		long loopCount = 0;
-		while (true) {
-			loopCount++;
-			if (action == Action.SELL) {
-				stockPriceForSellBuy += incrementPrice;
-			} else {
-				stockPriceForSellBuy -= incrementPrice;
-			}
-
-			l = Line.getNewLine("", prevLine, stockPriceForSellBuy, interest);
-			// l.printValues();
-
-			if (l.action == action || loopCount > 1000000000) {
-				System.out.println();
-				System.out.println(action + " Stock Price = " + l.stockPrice + " Quantity = " + l.sharesBoughtSold + ". Market order will be " + l.marketOrder);
-				break;
-			}
-			prevLine = l;
-		}
-
-		return l;
-	}
 }

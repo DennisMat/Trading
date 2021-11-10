@@ -22,7 +22,7 @@ public class DB {
 		Connection conn = null;
 		try {
 			ctx = new InitialContext();
-			DataSource ds = (DataSource) ctx.lookup("java:comp/env/jdbc/propertydb");
+			DataSource ds = (DataSource) ctx.lookup("java:comp/env/jdbc/serverpostgres");
 
 			if (ds != null) {
 				conn = ds.getConnection();
