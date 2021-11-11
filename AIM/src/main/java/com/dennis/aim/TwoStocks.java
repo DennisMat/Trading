@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +28,8 @@ public static boolean print = true;
 
 	
 			final double[] stockPrice = {10,9,8,7,6,5,4,3,2,1};
-			String[] dates = {"","","","","","","","","","",""};
+			LocalDate[] dates = {null,null,null,null,null,null,null,null,null,null,null};
 			
-		
-
-	
 			Line.print = true;
 			Line.processAllRows(dates, stockPrice, startingAmount, -10, "");
 

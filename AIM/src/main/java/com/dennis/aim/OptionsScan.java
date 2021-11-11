@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,11 +80,11 @@ public class OptionsScan {
 			List<CSVRecord> l = set.getValue();
 
 			final double[] optionPrice = new double[l.size()];
-			final String[] dates = new String[l.size()];
+			final LocalDate[] dates = new LocalDate[l.size()];
 
 			for (int i = 0; i < l.size(); i++) {
 				optionPrice[i] = Double.parseDouble(l.get(i).get(10));
-				dates[i] = l.get(i).get(7);
+				dates[i] = LocalDate.parse(l.get(i).get(7));
 			}
 			String symbol = "symbol = \t" + set.getKey();
 			System.out.println(symbol);

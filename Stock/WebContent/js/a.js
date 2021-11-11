@@ -20,16 +20,16 @@ function makeGrid(){
 
 
 function fillStockData(linesData){
-	
-	
+
 	
 	var stocksTable=$('#stocksTable').DataTable({
 		//"bProcessing" : true,
 		"aaData" : linesData.history,
-
-
 		"aoColumns" : [
-			{"sTitle": "Date", "mData" : "date"}, 
+			{ "title" : "Trade Date", "mData": null, render: function ( data, type, row ) {
+		       return data.date.year+'-'+data.date.month+'-'+data.date.day;
+				//return "";
+		    } }, 
 			{"sTitle"  :"Stock Price","mData" : "stockPrice"},
 			//{"sTitle"  : "Stock Value","mData" : "stockValue"},
 			//{"sTitle"  : "Safe","mData" : "safe"},

@@ -3,6 +3,7 @@ package com.dennis.aim;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 import org.apache.commons.io.FileUtils;
 
@@ -14,7 +15,7 @@ public class Line {
 	static boolean print=false;
 	static boolean writeToFile=false;
 
-	public String date;
+	public LocalDate date;
 	public double stockPrice;
 
 	double stockValue;
@@ -103,7 +104,7 @@ public class Line {
 	 * 
 	 */
 
-	public Line(String date, long prevStocksOwned, double prevCash, double stockPrice, double prevSharesBoughtSold, double prevPortfolioControl, double prevMarketOrder, Action prevAction,
+	public Line(LocalDate date, long prevStocksOwned, double prevCash, double stockPrice, double prevSharesBoughtSold, double prevPortfolioControl, double prevMarketOrder, Action prevAction,
 			double prevInterest, double interest) {
 
 		this.date = date;
@@ -193,7 +194,21 @@ public class Line {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static Line getLine(String date, double startingStockPrice, double startingAmount, double startingInterest) {
+	public static Line getLine(LocalDate dates[], double[] stockPrices, double startingAmount, double startingInterest) {
+		double startingStockPrice = 0;
+		LocalDate date = null;
+		for (int i = 0; i < stockPrices.length; i++) {
+			if (stockPrices[i] > MINIMUM_PRICE) {// sometimes the price is zero and these figures have to be skipped.
+				startingStockPrice = stockPrices[i];
+				date = dates[i];
+				break;
+			}
+		}
+
+		return getFirstLine(date, startingStockPrice, startingAmount, startingInterest);
+	}
+	
+	public static Line getFirstLine(LocalDate date, double startingStockPrice, double startingAmount, double startingInterest) {
 		Line lineFirst = new Line();
 
 		lineFirst.date = date;
@@ -211,21 +226,7 @@ public class Line {
 		return lineFirst;
 	}
 
-	public static Line getLine(String dates[], double[] stockPrices, double startingAmount, double startingInterest) {
-		double startingStockPrice = 0;
-		String date = null;
-		for (int i = 0; i < stockPrices.length; i++) {
-			if (stockPrices[i] > MINIMUM_PRICE) {// sometimes the price is zero and these figures have to be skipped.
-				startingStockPrice = stockPrices[i];
-				date = dates[i];
-				break;
-			}
-		}
-
-		return getLine(date, startingStockPrice, startingAmount, startingInterest);
-	}
-
-	public static Line getLine(double startingStockPrice, int startingStockOwned, double startingCash, double portfolioControl) {
+	public static Line getFirstLine(double startingStockPrice, long startingStockOwned, double startingCash, double portfolioControl) {
 		Line lineFirst = new Line();
 
 		lineFirst.cash = startingCash;
@@ -240,7 +241,7 @@ public class Line {
 		return lineFirst;
 	}
 
-	static void processAllRows(String dates[], double[] stockPrice, double startingAmount, double interest, String outputFile) throws IOException {
+	static void processAllRows(LocalDate dates[], double[] stockPrice, double startingAmount, double interest, String outputFile) throws IOException {
 		Line lineInt = Line.getLine(dates, stockPrice, startingAmount, interest);
 		if (print) {
 			lineInt.printHeader();
@@ -268,7 +269,7 @@ public class Line {
 
 	}
 
-	public static Line getNewLine(String date, Line prevLine, double stockPrice, double interest) {
+	public static Line getNewLine(LocalDate date, Line prevLine, double stockPrice, double interest) {
 
 		if (stockPrice < MINIMUM_PRICE) {
 			prevLine.date = date;
@@ -305,7 +306,7 @@ public class Line {
 				stockPriceForSellBuy -= incrementPrice;
 			}
 
-			l = Line.getNewLine("", prevLine, stockPriceForSellBuy, interest);
+			l = Line.getNewLine(null, prevLine, stockPriceForSellBuy, interest);
 
 			if (l.action == action || loopCount > 1000000000) {
 				System.out.println();

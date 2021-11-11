@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,11 +76,11 @@ public static boolean print = true;
 			final double[] stockPrice = new double[stockPriceList.size()];
 			int index = 0;
 
-			final String[] dates = new String[stockPriceList.size()];
+			final LocalDate[] dates = new LocalDate[stockPriceList.size()];
 
 			for (int i = 0; i < stockPriceList.size(); i++) {
 				stockPrice[i] = stockPriceList.get(i);
-				dates[i] = dateList.get(i);
+				dates[i] = LocalDate.parse(dateList.get(i));
 			}
 			//Line.print = true;
 			String symbol=file.getName().substring(0,file.getName().lastIndexOf("."));

@@ -22,7 +22,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import com.dennis.models.Individual;
-import com.dennis.models.Parking;
+import com.dennis.models.Display;
 import com.dennis.util.Util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -115,18 +115,11 @@ public class ProcessRequestServlet extends HttpServlet {
 	void parkingMethods(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers,
 			String action) {
 		try {
-
 			if (action.equals("get_stock_data")) {
-				
-
-				Map results = Parking.getLines();
+				Map results = Display.getLines(1,1);
 				Util.sendResponseToClient(response, gson.toJson(results));
 
 			}
-
-
-
-
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -26,11 +26,11 @@ public class Test {
 		// lineFirst.printValues();
 		System.out.println();
 
-		Line prevLine = Line.getLine("", stockPrice[0],startingAmount,0);
+		Line prevLine = Line.getFirstLine(null, stockPrice[0],startingAmount,0);
 		boolean testsPassed=true;
 		for (int i = 0; i < interest.length; i++) {
 
-			Line l = Line.getNewLine("", prevLine, stockPrice[i], interest[i]);
+			Line l = Line.getNewLine(null, prevLine, stockPrice[i], interest[i]);
 			 l.printValues();
 			// System.out.println();
 			if (expectedPortfolioValues[i] != l.portfolioValue || expectedCash[i] != l.cash) {

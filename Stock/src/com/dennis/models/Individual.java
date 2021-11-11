@@ -143,7 +143,10 @@ public class Individual {
 		return recordInserted;
 	}
 
-	
+	public static boolean hasAccess(long  userId, long  propertyId) {
+		
+		return true;
+	}
  
    
 }
