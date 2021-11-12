@@ -61,36 +61,37 @@ CREATE TABLE public.history
 (
  history_id SERIAL PRIMARY KEY, 
  user_id bigint,
-	stock_id bigint,
-      date_trade date,
-	  stock_price double precision,
-	  stock_quantity_owned bigint,
-      cash double precision,
-	  notes text,
-	  
-	      CONSTRAINT user_id FOREIGN KEY (user_id)
-        REFERENCES public.user (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+ stock_id bigint,
+ date_trade date,
+ stock_price double precision,
+ stock_quantity_owned bigint,
+ cash double precision,
+ notes text,
+  
+	  CONSTRAINT user_id FOREIGN KEY (user_id)
+	REFERENCES public.user (user_id) MATCH SIMPLE
+	ON UPDATE NO ACTION
+	ON DELETE NO ACTION
 );
 
 
 		
 
-INSERT INTO public.history VALUES (1,1,1,'2021-05-01', 10,500, 5000,NULL);
-INSERT INTO public.history VALUES (2,1,1,'2021-05-02', 8,575, 5022,NULL);
-INSERT INTO public.history VALUES (3,1,1,'2021-05-03', 5,1002, 4441,NULL);
-INSERT INTO public.history VALUES (4,1,1,'2021-05-04', 4,1492, 2316,NULL);
-INSERT INTO public.history VALUES (5,1,1,'2021-05-05', 8,1068, 360,NULL);
-
-INSERT INTO public.history VALUES (6,1,1,'2021-05-06',10,360, 3771.5,NULL);
-INSERT INTO public.history VALUES (7,1,1,'2021-05-07', 5,1385, 6090,NULL);
-INSERT INTO public.history VALUES (8,1,1,'2021-05-08', 4,2038, 3390,NULL);
-INSERT INTO public.history VALUES (9,1,1,'2021-05-09', 8,1455, 784,NULL);
-
+INSERT INTO public.history VALUES (1,1,0,'2021-05-01', 10,500, 5000,NULL);
+INSERT INTO public.history VALUES (2,1,0,'2021-05-02', 8,575, 5022,NULL);
+INSERT INTO public.history VALUES (3,1,0,'2021-05-03', 5,1002, 4441,NULL);
+INSERT INTO public.history VALUES (4,1,0,'2021-05-04', 4,1492, 2316,NULL);
+INSERT INTO public.history VALUES (5,1,0,'2021-05-05', 8,1068, 360,NULL);
+INSERT INTO public.history VALUES (6,1,0,'2021-05-06',10,360, 3771.5,NULL);
+INSERT INTO public.history VALUES (7,1,0,'2021-05-07', 5,1385, 6090,NULL);
+INSERT INTO public.history VALUES (8,1,0,'2021-05-08', 4,2038, 3390,NULL);
+INSERT INTO public.history VALUES (9,1,0,'2021-05-09', 8,1455, 784,NULL);
 
 
+INSERT INTO public.history VALUES (10,1,1,'2021-11-11', 24.25,415, 10063,NULL);
 
-
+INSERT INTO public.history VALUES (11,1,2,'2021-11-11', 117.0,128, 14976,NULL);
+INSERT INTO public.history VALUES (12,1,3,'2021-11-11', 2.95,10210, 30119.5,NULL);
+INSERT INTO public.history VALUES (13,1,4,'2021-11-11', 8.85,1026, 9080.1,NULL);
 
 

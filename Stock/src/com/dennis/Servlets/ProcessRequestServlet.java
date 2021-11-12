@@ -116,7 +116,18 @@ public class ProcessRequestServlet extends HttpServlet {
 			String action) {
 		try {
 			if (action.equals("get_stock_data")) {
-				Map results = Display.getLines(1,1);
+				String stock = headers.get("stock");
+				long stock_id=0;
+				String[] stocks = {"test","POU", "SAIL", "RCOM", "JPASSOCIAT"};
+				
+				for(int i=0;i<stocks.length;i++) {
+					if(stock.equalsIgnoreCase(stocks[i])) {
+						stock_id=i;
+						break;
+					}
+				}
+				
+				Map results = Display.getLines(1,stock_id);
 				Util.sendResponseToClient(response, gson.toJson(results));
 
 			}

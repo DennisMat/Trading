@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import com.dennis.db.DB;
+import com.dennis.models.Line.Action;
 
 public class Display {
 
@@ -33,21 +35,8 @@ public class Display {
 		Map h = new HashMap();
 		List<Line> lines = new ArrayList<Line>();
 
-		// (String date, double startingStockPrice, double startingAmount, double startingInterest)
-
-		/* lines.add(Line.getLine("2021-05-01", 10, 0, 22)); lines.add(Line.getLine("2021-05-02", 8, 0, 19)); lines.add(Line.getLine("2021-05-03", 5, 0, 10)); lines.add(Line.getLine("2021-05-04", 4,
-		 * 0, 2)); lines.add(Line.getLine("2021-05-05", 5, 0, 2));
-		 * 
-		 * lines.add(Line.getLine("2021-05-06", 8, 0, 17)); lines.add(Line.getLine("2021-05-07", 10, 0, 27)); //lines.add(Line.getLine("2021-05-08", 8, 0, 27)); lines.add(Line.getLine("2021-05-09", 5,
-		 * 0, 15));
-		 * 
-		 * lines.add(Line.getLine("2021-05-10", 4, 0, 3)); //lines.add(Line.getLine("2021-05-11", 5, 0, 3)); lines.add(Line.getLine("2021-05-12", 8, 0, 24)); */
-
-		// lines.add(Line.getLine("2021-05-13", 8.01, 0, 0));
-		// lines.add(Line.getLine("2021-05-13", 6.43, 0, 0));
-
 		Connection conn = DB.getConnection();
-		if (!Individual.hasAccess(1, 1)) {
+		if (!Individual.hasAccess(user_id, stock_id)) {
 			return null;// no rights
 		}
 		try {
@@ -64,50 +53,50 @@ public class Display {
 
 					Line line = null;
 					if (prevLine == null) {// this is for the very first line, it's hit only once
-//						prevLine = new Line();
-//						prevLine.date=rst.getObject("date_trade", LocalDate.class);
-//						prevLine.cash = rst.getDouble("cash");
-//						prevLine.stockPrice = rst.getDouble("stock_price");
-//						prevLine.stockValue=prevLine.cash;
-//						prevLine.portfolioControl = prevLine.cash;
-						
-						
-						
-						prevLine=Line.getFirstLine(rst.getDouble("stock_price"),
-								rst.getLong("stock_quantity_owned"), 
-								rst.getDouble("cash"), rst.getDouble("cash")) ;
-						prevLine.date=rst.getObject("date_trade", LocalDate.class);
-						
+						prevLine = Line.getFirstLine(rst.getDouble("stock_price"), rst.getLong("stock_quantity_owned"), rst.getDouble("cash"), rst.getDouble("cash"));
+						prevLine.date = rst.getObject("date_trade", LocalDate.class);
+						prevLine.action=Action.BUY;
+
 						line = prevLine;
 
 					} else {
 						// a very convoluted way of getting interest.
-						double interest=rst.getDouble("cash") - prevLine.cash -prevLine.marketOrder;
-						prevLine.interest=interest;
-						line = Line.getNewLine(rst.getObject("date_trade", LocalDate.class), 
-								prevLine, rst.getDouble("stock_price"), 
-								interest);
+						double interest = rst.getDouble("cash") - prevLine.cash - prevLine.marketOrder;
+						prevLine.interest = interest;
+						line = Line.getNewLine(rst.getObject("date_trade", LocalDate.class), prevLine, rst.getDouble("stock_price"), interest);
+						if(line.sharesBoughtSold>0) {
+							line.action=Action.BUY;
+						}else {
+							line.action=Action.SELL;
+						}
+						
 						prevLine = line;
 					}
+					
+					
+					
 					lines.add(line);
 					// System.out.print("\n");
-					line.printValues();
+					// line.printValues();
 				}
 
 				Line lastLine = prevLine;
+				final double incrementPrice = 0.01f;
+				Line bp = Line.findBuyLimit(lastLine, incrementPrice);
+				Line sp = Line.findSellLimit(lastLine, incrementPrice);
+
+				if (user_id == 1 && stock_id == 0) {
+					test(lines, bp, sp );
+				}
 
 				h.put("history", lines);
 
-				final double incrementPrice = 0.01f;
-
 				prevLine.interest = 0;
-
-				Line bp = Line.findBuyLimit(lastLine, incrementPrice);
-				Line sp = Line.findSellLimit(lastLine, incrementPrice);
 
 				h.put("history", lines);
 				h.put("buyPredict", bp);
 				h.put("sellPredict", sp);
+				h.put("stock_id", stock_id);
 
 			}
 
@@ -118,6 +107,56 @@ public class Display {
 		}
 
 		return h;
+	}
+
+	static void test(List<Line> lines, Line bp, Line sp) {
+
+		double[] interest = { 22, 19, 10, 4, 17, 54, 15, 6 };
+		double[] expectedPortfolioValues = { 10000, 9022, 7316, 6324, 12296, 14451.5f, 10300, 8930, 17088 };
+		double[] expectedCash = { 5000, 5022, 4441, 2316, 360, 3771.5f, 6090, 3390, 784 };
+
+		final double expectedBuyPrice = 6.190000040456653f;
+		long expectedBuyQuantity = 17;
+
+		final double expectedSellPrice = 8.009999999776483f;
+		long expectedSellQuantity = -60;
+		
+		final double minDiff=0.0001f;
+
+		boolean testsPassed = true;
+		for (int i = 0; i < interest.length; i++) {
+			if (expectedPortfolioValues[i] != lines.get(i).portfolioValue || expectedCash[i] != lines.get(i).cash) {
+				System.out.println("TEST FAILED on record " + i);
+				testsPassed = false;
+				break;
+			}
+
+		}
+
+		if (testsPassed) {
+			if (Math.abs(expectedBuyPrice - bp.stockPrice)>minDiff 
+					|| Math.abs(expectedBuyQuantity - bp.sharesBoughtSold)>minDiff) {
+				System.out.println("TEST FAILED. Buy price = " + bp.stockPrice +" Buy quantity = "+ bp.sharesBoughtSold );
+				testsPassed = false;
+			}
+
+		}
+
+		if (testsPassed) {
+			if (Math.abs(expectedSellPrice - sp.stockPrice)>minDiff 
+					|| Math.abs(expectedSellQuantity - sp.sharesBoughtSold)>minDiff ){
+				System.out.println("TEST FAILED. Sell price = " + sp.stockPrice +" Sell quantity = "+ sp.sharesBoughtSold );
+				testsPassed = false;
+			}
+
+		}
+
+		if (testsPassed) {
+			System.out.println("TEST PASSED");
+		} else {
+			System.out.println("TEST FAILED");
+		}
+
 	}
 
 }

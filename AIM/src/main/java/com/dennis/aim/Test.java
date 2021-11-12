@@ -38,8 +38,6 @@ public class Test {
 				testsPassed=false;
 				break;
 			}
-			
-
 			prevLine = l;
 		}
 		

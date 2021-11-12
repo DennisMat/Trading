@@ -1,18 +1,30 @@
 function makeGrid(){
+	
+	
+	var stocks = ["test","POU", "SAIL", "RCOM", "JPASSOCIAT"];
+	for(var i=0; i<stocks.length; i++){
+	
+			$.ajax({
+				url : "processrequest",
+				type : "POST", 
+				contentType : "application/json; charset=utf-8",
+				dataType : 'json',
+				headers: { 'action': 'get_stock_data','stock':stocks[i]},
+				success : function(linesData) {
+					fillStockData(linesData);
+				},
+				error : function(xhr, resp, text) {
+					console.log(xhr, resp, text);
+				}
+			});
+	
+	}
+	
 
-	$.ajax({
-		url : "processrequest",
-		type : "POST", 
-		contentType : "application/json; charset=utf-8",
-		dataType : 'json',
-		headers: { 'action': 'get_stock_data'},
-		success : function(linesData) {
-			fillStockData(linesData);
-		},
-		error : function(xhr, resp, text) {
-			console.log(xhr, resp, text);
-		}
-	});
+
+	
+
+	
 
 }
 
@@ -20,9 +32,16 @@ function makeGrid(){
 
 
 function fillStockData(linesData){
+	
+	var stock="test";
+	var stock_id=linesData.stock_id;
+	var stocks = ["test","POU", "SAIL", "RCOM", "JPASSOCIAT"];
+	
+	stock=stocks[stock_id];
+	
 
 	
-	var stocksTable=$('#stocksTable').DataTable({
+	var stocksTable=$("#stocksTable_"+stock).DataTable({
 		//"bProcessing" : true,
 		"aaData" : linesData.history,
 		"aoColumns" : [
@@ -56,8 +75,8 @@ function fillStockData(linesData){
 	var buyAdvice="Buy "+ linesData.buyPredict.sharesBoughtSold  +" shares for " + linesData.buyPredict.stockPrice 
 	var sellAdvice="Sell "+ linesData.sellPredict.sharesBoughtSold  +" shares for " + linesData.sellPredict.stockPrice 
 	
-	$( "#buyAdvice" ).text(buyAdvice);
-	$( "#sellAdvice" ).text(sellAdvice);
+	$( "#buyAdvice_"+stock ).text(buyAdvice);
+	$( "#sellAdvice_"+stock).text(sellAdvice);
 
 }
 
