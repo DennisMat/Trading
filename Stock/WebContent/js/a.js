@@ -1,47 +1,45 @@
 function makeGrid(){
-	
-	
-	var stocks = ["test","POU", "SAIL", "RCOM", "JPASSOCIAT"];
-	for(var i=0; i<stocks.length; i++){
-	
+
 			$.ajax({
 				url : "processrequest",
 				type : "POST", 
 				contentType : "application/json; charset=utf-8",
 				dataType : 'json',
-				headers: { 'action': 'get_stock_data','stock':stocks[i]},
-				success : function(linesData) {
-					fillStockData(linesData);
+				headers: { 'action': 'get_stock_data'},
+				success : function(stocksData) {
+					fillStockData(stocksData);
 				},
 				error : function(xhr, resp, text) {
 					console.log(xhr, resp, text);
 				}
 			});
-	
-	}
-	
-
-
-	
-
-	
 
 }
 
 
+function fillStockData(stocksData){
+	  for (var stockSymbol in stocksData) {
+          var linesData = stocksData[stockSymbol];
+          fillTableData(stockSymbol,linesData);
+	  }
+}
 
 
-function fillStockData(linesData){
+function fillTableData(stockSymbol,linesData){
 	
-	var stock="test";
+	
+	
 	var stock_id=linesData.stock_id;
-	var stocks = ["test","POU", "SAIL", "RCOM", "JPASSOCIAT"];
 	
-	stock=stocks[stock_id];
-	
+	$('#stocksDiv').append(
+			'<div id="stock_name_'+stockSymbol+'"></div>'
+			+'<div><table id="stocksTable_'+stockSymbol+'" class="display compact" style="width: 100%"></table></div>'
+			+'<div id="buyAdvice_'+stockSymbol+'"></div>'
+			+'<div id="sellAdvice_'+stockSymbol+'"></div> <br><br><br>');
 
+	$( "#stock_name_"+stockSymbol ).text("Stock Symbol: "+ stockSymbol);
 	
-	var stocksTable=$("#stocksTable_"+stock).DataTable({
+	var stocksTable=$("#stocksTable_"+stockSymbol).DataTable({
 		//"bProcessing" : true,
 		"aaData" : linesData.history,
 		"aoColumns" : [
@@ -64,9 +62,9 @@ function fillStockData(linesData){
 			],
 			dom : 'Bfrtip',
 			buttons : [ {
-				text : 'Add Parking',
+				text : 'Add Transaction',
 				action : function(e, dt, node, config) {
-					popUpParkingForm(property_id,null) ;	
+					popUpTransationForm(stock_id,null) ;	
 				}
 			} ]
 	
@@ -75,8 +73,79 @@ function fillStockData(linesData){
 	var buyAdvice="Buy "+ linesData.buyPredict.sharesBoughtSold  +" shares for " + linesData.buyPredict.stockPrice 
 	var sellAdvice="Sell "+ linesData.sellPredict.sharesBoughtSold  +" shares for " + linesData.sellPredict.stockPrice 
 	
-	$( "#buyAdvice_"+stock ).text(buyAdvice);
-	$( "#sellAdvice_"+stock).text(sellAdvice);
+	$( "#buyAdvice_"+stockSymbol ).text(buyAdvice);
+	$( "#sellAdvice_"+stockSymbol).text(sellAdvice);
 
+}
+
+
+function popUpTransationForm(property_id,parking) {
+
+	
+	$("#dialog").remove();
+	$(document.body).append('<div id="dialog" title="Parking" style="display:none; min-width: 50px;">Its the money not the principles</div>');
+	$("#dialog").attr("title", "Parking Entry");
+
+	$("#dialog").load("include/parking.html?" + Math.random(), function() {
+
+		$("#property_id").attr("value", property_id);
+		if (typeof parking!== 'undefined' && parking!=null) {
+			$("#parking_id").attr("value", parking.parking_id);
+			$("#parking_spot_number").attr("value", parking.parking_spot_number);
+			$("#notes").attr("value", parking.notes);
+			
+		}
+
+		
+		
+		$("#parking_submit_button").on('click', function(e) {
+			e.preventDefault();
+
+			var parking = {
+				'property_id' : $('input[id=property_id]').val(),
+				'parking_spot_number' : $('input[id=parking_spot_number]').val(),
+				'notes' : $('input[id=notes]').val()			
+			};
+			
+			if($('input[id=parking_id]').val().length>0){
+				parking.parking_id=$('input[id=parking_id]').val();
+			}
+
+			$("body").css("cursor", "progress");
+			// send ajax
+			$.ajax({
+				url : 'processrequest', // url where to submit the request
+				type : "POST", // type of action POST || GET
+				contentType : "application/json; charset=utf-8",
+				dataType : 'json', // data type
+				data : JSON.stringify(parking), // post data || get data
+				headers: { 'action': 'insertupdate_parking'},
+				success : function(parkingData) {
+	
+					//console.log(result);
+					$("body").css("cursor", "default");
+					populateParkingTable("parkingsDiv",parking.property_id,null, parkingData)
+					$('#dialog').dialog('close');
+					
+				},
+				error : function(xhr, resp, text) {
+					console.log(xhr, resp, text);
+					$("body").css("cursor", "default");
+					$('#dialog').dialog('close');
+				}
+			})
+
+			return false;// because e.preventDefault(); may not work
+		});
+
+	});
+	
+
+	$("#dialog").dialog({
+		width : "50%"
+	});
+	
+	
+	
 }
 

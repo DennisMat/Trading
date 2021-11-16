@@ -127,7 +127,7 @@ function populateParkingTable(parkingContentsDiv,property_id, apartment_id, park
 
 				dom : 'Bfrtip',
 				buttons : [ {
-					text : 'Add Parking',
+					text : 'Add Transaction',
 					action : function(e, dt, node, config) {
 						popUpParkingForm(property_id,null) ;	
 					}

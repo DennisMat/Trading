@@ -1,6 +1,8 @@
-
 DROP TABLE IF EXISTS public.history;
+DROP TABLE IF EXISTS public.stock;
 DROP TABLE IF EXISTS public.user;
+
+
 
 --users of the website who may be office staff or occupants
 CREATE TABLE public.user
@@ -57,6 +59,26 @@ INSERT INTO public.user VALUES (36, 'jumbo', 'jumbo', 'sad', NULL, 'mumbo', NULL
 SELECT setval(pg_get_serial_sequence('public.user', 'user_id'), (SELECT MAX(user_id) FROM public.user)+1);
 
 
+CREATE TABLE public.stock
+(
+ stock_id SERIAL PRIMARY KEY, 
+ user_id bigint,
+ stock_symbol VARCHAR(50)  NOT NULL,
+ stock_description text,
+ 	CONSTRAINT user_id FOREIGN KEY (user_id)
+	REFERENCES public.user (user_id) MATCH SIMPLE
+	ON UPDATE NO ACTION
+	ON DELETE NO ACTION
+ );
+ 
+ 
+INSERT INTO public.stock VALUES (0,1,'TEST','TEST');
+INSERT INTO public.stock VALUES (1,1,'POU','POU');
+INSERT INTO public.stock VALUES (2,1,'SAIL','SAIL');
+INSERT INTO public.stock VALUES (3,1,'RCOM','RCOM');
+INSERT INTO public.stock VALUES (4,1,'JPASSOCIAT','JPASSOCIAT');
+
+
 CREATE TABLE public.history
 (
  history_id SERIAL PRIMARY KEY, 
@@ -68,8 +90,12 @@ CREATE TABLE public.history
  cash double precision,
  notes text,
   
-	  CONSTRAINT user_id FOREIGN KEY (user_id)
+	CONSTRAINT user_id FOREIGN KEY (user_id)
 	REFERENCES public.user (user_id) MATCH SIMPLE
+	ON UPDATE NO ACTION
+	ON DELETE NO ACTION,
+		CONSTRAINT stock_id FOREIGN KEY (stock_id)
+	REFERENCES public.stock (stock_id) MATCH SIMPLE
 	ON UPDATE NO ACTION
 	ON DELETE NO ACTION
 );
@@ -88,10 +114,8 @@ INSERT INTO public.history VALUES (8,1,0,'2021-05-08', 4,2038, 3390,NULL);
 INSERT INTO public.history VALUES (9,1,0,'2021-05-09', 8,1455, 784,NULL);
 
 
-INSERT INTO public.history VALUES (10,1,1,'2021-11-11', 24.25,415, 10063,NULL);
+INSERT INTO public.history VALUES (10,1,1,'2021-11-11', 24.75,1115, 27520,NULL);
 
 INSERT INTO public.history VALUES (11,1,2,'2021-11-11', 117.0,128, 14976,NULL);
 INSERT INTO public.history VALUES (12,1,3,'2021-11-11', 2.95,10210, 30119.5,NULL);
 INSERT INTO public.history VALUES (13,1,4,'2021-11-11', 8.85,1026, 9080.1,NULL);
-
-
