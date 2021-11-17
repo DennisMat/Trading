@@ -64,7 +64,7 @@ function fillTableData(stockSymbol,linesData){
 			buttons : [ {
 				text : 'Add Transaction',
 				action : function(e, dt, node, config) {
-					popUpTransationForm(stock_id,null) ;	
+					popUpTransactionForm(stock_id,null) ;	
 				}
 			} ]
 	
@@ -79,14 +79,14 @@ function fillTableData(stockSymbol,linesData){
 }
 
 
-function popUpTransationForm(property_id,parking) {
+function popUpTransactionForm(property_id,parking) {
 
 	
 	$("#dialog").remove();
 	$(document.body).append('<div id="dialog" title="Parking" style="display:none; min-width: 50px;">Its the money not the principles</div>');
 	$("#dialog").attr("title", "Parking Entry");
 
-	$("#dialog").load("include/parking.html?" + Math.random(), function() {
+	$("#dialog").load("include/transaction.html?" + Math.random(), function() {
 
 		$("#property_id").attr("value", property_id);
 		if (typeof parking!== 'undefined' && parking!=null) {

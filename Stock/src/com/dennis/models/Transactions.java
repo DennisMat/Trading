@@ -38,7 +38,7 @@ public class Transactions {
 
 		try {
 			if (conn != null) {
-				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? AND stock_id=0 ");
+				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? ");
 				stmt.setLong(1, user_id);
 				ResultSet rst = stmt.executeQuery();
 
@@ -165,11 +165,6 @@ public class Transactions {
 		double[] expectedPortfolioValues = { 10000, 9022, 7316, 6324, 7818, 12296, 14451.5f, 12799, 10300, 8930, 10971,
 				17088 };
 		double[] expectedCash = { 5000, 5022, 4441, 2316, 358, 360, 3771.5f, 6063, 6090, 3390, 781, 784 };
-		
-		
-		
-	
-		
 
 		final double expectedBuyPrice = 6.190000040456653f;
 		long expectedBuyQuantity = 17;

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
+
 import com.dennis.models.Line.Action;
 
 
@@ -99,8 +100,7 @@ public class Line {
 	 * cash = half of initial value safe= 10% of stock value
 	 * 
 	 * 
-	 * 1)buyOrSellAdvice = stockValue - previous portfolioControl, if positive sell 
-	 * 2)  * If buyOrSellAdvice> safe, only then act. 3) Marketorder = buyOrSellAdvice -safe 4) If sell, portfolio control
+	 * 1)buyOrSellAdvice = stockValue - previous portfolioControl, if positive sell 2) If buyOrSellAdvice> safe, only then act. 3) Marketorder = buyOrSellAdvice -safe 4) If sell, portfolio control
 	 * remains the same, else if buy newPortfolioControl = portfolioControl + marketOrder / 2;
 	 * 
 	 */
@@ -118,12 +118,6 @@ public class Line {
 
 		this.cash = prevCash + prevInterest + prevMarketOrder;
 		
-//		if (isTest || Math.abs(prevMarketOrder) > MINIMUM_PRICE) {
-//			this.cash = prevCash + prevInterest + prevMarketOrder;
-//		} else {
-//			this.cash = prevCash;// interest has no effect if the previous order was 0
-//		}
-
 		this.interest = interest;
 
 		portfolioValue = stockValue + cash;
@@ -151,13 +145,9 @@ public class Line {
 				}
 			}
 
-			if (potentialMarketorder > 100) {
+			if (potentialMarketorder > getMinimumMarketOrder(stockValue)) {
 				marketOrder = potentialMarketorder;
 				sharesBoughtSold = Math.round(potentialMarketorder / stockPrice);
-//				int sharesBoughtSoldF = (int) Math.floor(potentialMarketorder / stockPrice);
-//				if(sharesBoughtSold!=sharesBoughtSoldF) {
-//					int a=7;
-//				}
 				if(sharesBoughtSold==0) {
 					marketOrder = 0;//make market order 0 if no shares are bought.
 				}
@@ -190,11 +180,34 @@ public class Line {
 		}
 
 	}
+	
+	double getMinimumMarketOrder(double stockValue){
+		double minimumMarketOrder= stockValue/(10*5);
+		
+		if(minimumMarketOrder <250) {
+			minimumMarketOrder=100;
+		}
+		return minimumMarketOrder;
+	}
 
 	public Line() {
 		// TODO Auto-generated constructor stub
 	}
 
+	public static Line getLine(LocalDate dates[], double[] stockPrices, double startingAmount, double startingInterest) {
+		double startingStockPrice = 0;
+		LocalDate date = null;
+		for (int i = 0; i < stockPrices.length; i++) {
+			if (stockPrices[i] > MINIMUM_PRICE) {// sometimes the price is zero and these figures have to be skipped.
+				startingStockPrice = stockPrices[i];
+				date = dates[i];
+				break;
+			}
+		}
+
+		return getFirstLine(date, startingStockPrice, startingAmount, startingInterest);
+	}
+	
 	public static Line getFirstLine(LocalDate date, double startingStockPrice, double startingAmount, double startingInterest) {
 		Line lineFirst = new Line();
 
@@ -211,20 +224,6 @@ public class Line {
 		lineFirst.portfolioValue = startingAmount;
 		lineFirst.interest = startingInterest;
 		return lineFirst;
-	}
-
-	public static Line getLine(LocalDate dates[], double[] stockPrices, double startingAmount, double startingInterest) {
-		double startingStockPrice = 0;
-		LocalDate date = null;
-		for (int i = 0; i < stockPrices.length; i++) {
-			if (stockPrices[i] > MINIMUM_PRICE) {// sometimes the price is zero and these figures have to be skipped.
-				startingStockPrice = stockPrices[i];
-				date = dates[i];
-				break;
-			}
-		}
-
-		return getFirstLine(date, startingStockPrice, startingAmount, startingInterest);
 	}
 
 	public static Line getFirstLine(double startingStockPrice, long startingStockOwned, double startingCash, double portfolioControl) {
@@ -277,8 +276,6 @@ public class Line {
 		}
 		return new Line(date, prevLine.stockOwned, prevLine.cash, stockPrice, prevLine.sharesBoughtSold, prevLine.portfolioControl, prevLine.marketOrder, prevLine.action, prevLine.interest, interest);
 	}
-	
-	
 
 
 	static void predict(Line lastLine, final double incrementPrice) {
@@ -309,14 +306,13 @@ public class Line {
 			}
 
 			l = Line.getNewLine(null, prevLine, stockPriceForSellBuy, interest);
-			// l.printValues();
 
 			if (l.action == action || loopCount > 1000000000) {
 				System.out.println();
 				System.out.println(action + " Stock Price = " + l.stockPrice + " Quantity = " + l.sharesBoughtSold + ". Market order will be " + l.marketOrder);
 				break;
 			}
-			//prevLine = l;
+
 		}
 
 		return l;

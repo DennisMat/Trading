@@ -117,12 +117,6 @@ public class Line {
 
 		this.cash = prevCash + prevInterest + prevMarketOrder;
 		
-//		if (isTest || Math.abs(prevMarketOrder) > MINIMUM_PRICE) {
-//			this.cash = prevCash + prevInterest + prevMarketOrder;
-//		} else {
-//			this.cash = prevCash;// interest has no effect if the previous order was 0
-//		}
-
 		this.interest = interest;
 
 		portfolioValue = stockValue + cash;
@@ -150,13 +144,9 @@ public class Line {
 				}
 			}
 
-			if (potentialMarketorder > 100) {
+			if (potentialMarketorder > getMinimumMarketOrder(stockValue)) {
 				marketOrder = potentialMarketorder;
 				sharesBoughtSold = Math.round(potentialMarketorder / stockPrice);
-//				int sharesBoughtSoldF = (int) Math.floor(potentialMarketorder / stockPrice);
-//				if(sharesBoughtSold!=sharesBoughtSoldF) {
-//					int a=7;
-//				}
 				if(sharesBoughtSold==0) {
 					marketOrder = 0;//make market order 0 if no shares are bought.
 				}
@@ -188,6 +178,15 @@ public class Line {
 			portfolioControl = prevPortfolioControl - marketOrder / 2;
 		}
 
+	}
+	
+	double getMinimumMarketOrder(double stockValue){
+		double minimumMarketOrder= stockValue/(10*5);
+		
+		if(minimumMarketOrder>80 && minimumMarketOrder <120) {
+			minimumMarketOrder=100;
+		}
+		return minimumMarketOrder;
 	}
 
 	public Line() {
