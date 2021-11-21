@@ -302,6 +302,7 @@ function populateHistoryTable(history) {
 							"title" : "Date and time",
 							"mData" : null,
 							render : function(data, type, row) {
+								//TODO: use formatDateString later
 								return data.date_time.dateTime.date.year + '-' + data.date_time.dateTime.date.month + '-' + data.date_time.dateTime.date.day + " "
 										+ data.date_time.dateTime.time.hour + ':' + data.date_time.dateTime.time.minute + ':' + data.date_time.dateTime.time.second;
 							}

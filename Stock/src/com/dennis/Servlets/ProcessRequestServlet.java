@@ -19,10 +19,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
 
 import com.dennis.models.Individual;
-import com.dennis.models.Transactions;
+import com.dennis.models.Trade;
 import com.dennis.util.Util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -65,9 +64,7 @@ public class ProcessRequestServlet extends HttpServlet {
 
 		authMethods(request, response, headers, action);
 
-
-
-		displayTransactions(request, response, headers, action);
+		transactionMethods(request, response, headers, action);
 
 
 
@@ -112,15 +109,21 @@ public class ProcessRequestServlet extends HttpServlet {
 	}
 
 
-	void displayTransactions(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers,
+	void transactionMethods(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers,
 			String action) {
+		long userId = Util.getUserInSession(request);
 		try {
 			if (action.equals("get_stock_data")) {
-				Map results = Transactions.getLines(1);
+				Map results = Trade.getLines(1);
 				Util.sendResponseToClient(response, gson.toJson(results));
-
 			}
-
+			if (action.equals("insert_trade")) {
+				Trade t = gson.fromJson(request.getReader(), Trade.class);		
+				if (Trade.insertUpdateTradeRecord(userId,t) > 0) {	
+					Map results = Trade.getLines(userId);
+					Util.sendResponseToClient(response, gson.toJson(results));
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

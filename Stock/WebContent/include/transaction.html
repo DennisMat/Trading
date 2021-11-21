@@ -1,8 +1,59 @@
-<form id="parking_form">
-<input type="hidden" id="parking_id"> 
-	<input type="hidden" id="property_id"> 
-	<!--  <input type="hidden" id="apartment_id"> -->
-	Parking Spot Number: <input type="text" id="parking_spot_number"> <br>
-	Notes:<textarea id="notes" rows="4" cols="50"> </textarea>
-	<input type="submit"id="parking_submit_button" value="Save Value">
+<form id="trade_form">
+	<input type="hidden" id="trade_id">
+	 <input type="hidden" id="stock_id">
+
+	<div class="formrow">
+		<div id="div_date_from">
+
+			<div class="formlabel">
+				<label>Trade Date(yyyy-mm-dd)</label>
+			</div>
+			<div class="forminput">
+				<input type="text" id="date_trade"><br>
+			</div>
+		</div>
+	</div>
+	
+	<div class="formrow">
+		<div class="formlabel">
+			<label>Shares traded (negative for sell)</label>
+		</div>
+		<div class="forminput">
+			<input type="text" id="stock_quantity_traded"><br>
+		</div>
+	</div>
+
+	<div class="formrow">
+		<div class="formlabel">
+			<label>Price per share</label>
+		</div>
+		<div class="forminput">
+			<input type="text" id="stock_price"><br>
+		</div>
+	</div>
+
+	<div class="formrow">
+		<div class="formlabel">
+			<label>Cash added </label>
+		</div>
+		<div class="forminput">
+			<input type="text" id="cash_added"><br>
+		</div>
+	</div>
+
+
+
+	<div class="formrow">
+		<div class="formlabel">
+			<label>Notes</label>
+		</div>
+
+		<div class="forminput">
+			<textarea id="notes" rows="4"> </textarea>
+		</div>
+	</div>
+	<div class="formrow">
+		<input type="submit" id="transaction_submit_button" value="Save Value">
+	</div>
+
 </form>

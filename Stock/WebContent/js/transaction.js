@@ -27,7 +27,8 @@ function fillStockData(stocksData){
 
 function fillTableData(stockSymbol,linesData){
 	
-	
+	removeTable("stocksTable_"+stockSymbol);
+
 	
 	var stock_id=linesData.stock_id;
 	
@@ -41,10 +42,11 @@ function fillTableData(stockSymbol,linesData){
 	
 	var stocksTable=$("#stocksTable_"+stockSymbol).DataTable({
 		//"bProcessing" : true,
-		"aaData" : linesData.history,
+		"aaData" : linesData.trade,
 		"aoColumns" : [
 			{ "title" : "Trade Date", "mData": null, render: function ( data, type, row ) {
-		       return data.date.year+'-'+data.date.month+'-'+data.date.day;
+				return formatDateString(data.date);
+		      // return data.date.year+'-'+data.date.month+'-'+data.date.day;
 				//return "";
 		    } }, 
 			{"sTitle"  :"Stock Price","mData" : "stockPrice"},
@@ -58,7 +60,9 @@ function fillTableData(stockSymbol,linesData){
 			//{"sTitle"  : "Market Order","mData" : "marketOrder"},
 			{"sTitle"  : "Cash Added","mData" : "interest"},
 			{"sTitle"  : "Portfolio Value","mData" : "portfolioValue"},
-			{"sTitle"  : "Buy/Sell","mData" : "action"}
+			{"sTitle"  : "Buy/Sell","mData" : "action"},
+			{"defaultContent" : '<button id="editTransaction_'+stockSymbol+'">Edit</button>'},
+			{"defaultContent" : '<button id="deleteTransaction_"'+stockSymbol+'>Delete</button>'}
 			],
 			dom : 'Bfrtip',
 			buttons : [ {
@@ -70,6 +74,18 @@ function fillTableData(stockSymbol,linesData){
 	
 	});	
 	
+	
+	$('#stocksTable tbody').on('click', '#deleteProperty_'+'stockSymbol', function() {
+		var transactionDetails = stocksTable.row($(this).parents('tr')).data();
+		//showPropertyChangeStatusDialog(propertyDetails);
+
+	});
+
+	$('#stocksTable tbody').on('click', '#editProperty_'+'stockSymbol', function() {
+		var transactionDetails = stocksTable.row($(this).parents('tr')).data();
+		popUpTransactionForm(stock_id,transactionDetails);
+	});
+	
 	var buyAdvice="Buy "+ linesData.buyPredict.sharesBoughtSold  +" shares for " + linesData.buyPredict.stockPrice 
 	var sellAdvice="Sell "+ linesData.sellPredict.sharesBoughtSold  +" shares for " + linesData.sellPredict.stockPrice 
 	
@@ -79,36 +95,48 @@ function fillTableData(stockSymbol,linesData){
 }
 
 
-function popUpTransactionForm(property_id,parking) {
+function popUpTransactionForm(stock_id,transactionDetails) {
 
 	
 	$("#dialog").remove();
-	$(document.body).append('<div id="dialog" title="Parking" style="display:none; min-width: 50px;">Its the money not the principles</div>');
-	$("#dialog").attr("title", "Parking Entry");
+	$(document.body).append('<div id="dialog" title="Transaction" style="display:none; min-width: 50px;">Its the money not the principles</div>');
+	$("#dialog").attr("title", "Transaction Entry");
 
 	$("#dialog").load("include/transaction.html?" + Math.random(), function() {
 
-		$("#property_id").attr("value", property_id);
-		if (typeof parking!== 'undefined' && parking!=null) {
-			$("#parking_id").attr("value", parking.parking_id);
-			$("#parking_spot_number").attr("value", parking.parking_spot_number);
-			$("#notes").attr("value", parking.notes);
-			
+		$("#date_trade").datepicker({
+			dateFormat : 'yy-mm-dd'
+		});
+		
+		$("#stock_id").attr("value", stock_id);
+		
+		if (transactionDetails!=null) {
+			$("#trade_id").attr("value", transactionDetails.trade_id);
+			$("#date_trade").attr("value", transactionDetails.date_trade);
+			$("#stock_quantity_traded").attr("value", transactionDetails.stock_quantity_traded);	
+			$("#stock_price").attr("value", transactionDetails.stock_price);
+			$("#cash_added").attr("value", transactionDetails.cash_added);
+			$("#notes").attr("value", transactionDetails.notes);
 		}
 
 		
 		
-		$("#parking_submit_button").on('click', function(e) {
+		$("#transaction_submit_button").on('click', function(e) {
 			e.preventDefault();
 
-			var parking = {
-				'property_id' : $('input[id=property_id]').val(),
-				'parking_spot_number' : $('input[id=parking_spot_number]').val(),
+			var trade = {
+				
+				'stock_id' : $('input[id=stock_id]').val(),
+				'date_trade' : $('input[id=date_trade]').val(),
+				'stock_quantity_traded' : $('input[id=stock_quantity_traded]').val(),
+				'stock_price' :$('input[id=stock_price]').val(),
+				'cash_added' : $('input[id=cash_added]').val(),
 				'notes' : $('input[id=notes]').val()			
 			};
 			
-			if($('input[id=parking_id]').val().length>0){
-				parking.parking_id=$('input[id=parking_id]').val();
+			if($('input[id=trade_id]').val().length>0){
+				trade.trade_id=$('input[id=trade_id]').val();
+				//trade.trade_id=0;
 			}
 
 			$("body").css("cursor", "progress");
@@ -118,13 +146,14 @@ function popUpTransactionForm(property_id,parking) {
 				type : "POST", // type of action POST || GET
 				contentType : "application/json; charset=utf-8",
 				dataType : 'json', // data type
-				data : JSON.stringify(parking), // post data || get data
-				headers: { 'action': 'insertupdate_parking'},
-				success : function(parkingData) {
+				data : JSON.stringify(trade), // post data || get data
+				headers: { 'action': 'insert_trade'},
+				success : function(stocksData) {
 	
 					//console.log(result);
 					$("body").css("cursor", "default");
-					populateParkingTable("parkingsDiv",parking.property_id,null, parkingData)
+					//fillTableData(stockSymbol,linesData)
+					fillStockData(stocksData);
 					$('#dialog').dialog('close');
 					
 				},

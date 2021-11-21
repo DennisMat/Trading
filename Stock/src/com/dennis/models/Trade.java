@@ -14,24 +14,18 @@ import java.util.Map;
 import com.dennis.db.DB;
 import com.dennis.models.Line.Action;
 
-public class Transactions {
+public class Trade {
 
-	public long parking_id;
-	public long property_id;
-	public long apartment_id;
-	public String parking_spot_number;
+	public long trade_id;
+	public long user_id;
+	public long stock_id;
+	public LocalDate date_trade;
+	public double cash_added;
+	public double stock_price;
+	public long stock_quantity_traded;
 	public String notes;
 
-	public Transactions(long parking_id, long property_id, long apartment_id, String parking_spot_number, String notes) {
-		super();
-		this.parking_id = parking_id;
-		this.property_id = property_id;
-		this.apartment_id = apartment_id;
-		this.parking_spot_number = parking_spot_number;
-		this.notes = notes;
-	}
 
-	
 	public static Map getLines(long user_id) {
 		Map<String,Map> h = new HashMap<String,Map>();
 		Connection conn = DB.getConnection();
@@ -66,7 +60,7 @@ public class Transactions {
 		try {
 			if (conn != null) {
 
-				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM history WHERE user_id= ? AND stock_id=? order by date_trade");
+				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM trade WHERE user_id= ? AND stock_id=? order by date_trade");
 				stmt.setLong(1, user_id);
 				stmt.setLong(2, stock_id);
 				ResultSet rst = stmt.executeQuery();
@@ -144,7 +138,7 @@ public class Transactions {
 
 				prevLine.interest = 0;
 				h.put("stock_id", stock_id);
-				h.put("history", lines);
+				h.put("trade", lines);
 				h.put("buyPredict", bp);
 				h.put("sellPredict", sp);
 
@@ -158,6 +152,65 @@ public class Transactions {
 
 		return h;
 	}
+
+
+
+public static long  insertUpdateTradeRecord(long user_id, Trade t) {
+	long  tradeId = 0;
+	String insert = "INSERT INTO trade VALUES (DEFAULT,?,?,?,?,?,?,?) RETURNING  trade_id";
+	String update = "UPDATE  trade set date_trade=?,stock_quantity_traded=?,cash_added=?, state_province=?, postal_code=? where trade_id=?   RETURNING  trade_id";
+
+	String stm = null;
+	if (t.trade_id == 0) {
+		stm = insert;
+	} else {
+		stm = update;
+		tradeId = t.trade_id;
+	}
+/*
+  trade_id SERIAL PRIMARY KEY, 
+ user_id bigint,
+ stock_id bigint,
+ date_trade date,
+ stock_price double precision,
+ stock_quantity_traded bigint,
+ cash_added double precision,
+ notes text,
+ */
+	Connection conn = DB.getConnection();
+	try {
+		if (conn != null) {
+			PreparedStatement stmt = conn.prepareStatement(stm);
+			stmt.setLong (1, user_id);
+			stmt.setLong (2, t.stock_id);
+			stmt.setObject(3,t.date_trade );
+			stmt.setDouble(4, t.stock_price);
+			stmt.setLong (5, t.stock_quantity_traded);
+			stmt.setDouble(6, t.cash_added);
+			stmt.setString(7, t.notes);
+			
+			if (tradeId > 0) {
+				stmt.setLong (8, tradeId);
+			}
+
+			ResultSet rst = stmt.executeQuery();
+
+			if (rst.next()) {
+				tradeId = rst.getLong (1);
+			}
+
+		}
+
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} finally {
+		DB.closeConnection(conn);
+	}
+	return tradeId;
+
+}
+
 
 	static void test(List<Line> lines, Line bp, Line sp) {
 

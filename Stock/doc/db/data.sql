@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS public.history;
+DROP TABLE IF EXISTS public.trade;
 DROP TABLE IF EXISTS public.stock;
 DROP TABLE IF EXISTS public.user;
 
@@ -79,15 +79,15 @@ INSERT INTO public.stock VALUES (3,1,'RCOM','RCOM');
 INSERT INTO public.stock VALUES (4,1,'JPASSOCIAT','JPASSOCIAT');
 
 
-CREATE TABLE public.history
+CREATE TABLE public.trade
 (
- history_id SERIAL PRIMARY KEY, 
+ trade_id SERIAL PRIMARY KEY, 
  user_id bigint,
  stock_id bigint,
  date_trade date,
  stock_price double precision,
- stock_quantity_owned bigint,
- cash double precision,
+ stock_quantity_traded bigint,
+ cash_added double precision,
  notes text,
   
 	CONSTRAINT user_id FOREIGN KEY (user_id)
@@ -101,21 +101,29 @@ CREATE TABLE public.history
 );
 
 
-		
+INSERT INTO public.trade VALUES (1,1,0,'2021-05-01', 10,500, 22,NULL);
+INSERT INTO public.trade VALUES (2,1,0,'2021-05-02', 8,75, 19,NULL);
+INSERT INTO public.trade VALUES (3,1,0,'2021-05-03', 5,427, 10,NULL);
+INSERT INTO public.trade VALUES (4,1,0,'2021-05-04', 4,-490, 2,NULL);
 
-INSERT INTO public.history VALUES (1,1,0,'2021-05-01', 10,500, 5000,NULL);
-INSERT INTO public.history VALUES (2,1,0,'2021-05-02', 8,575, 5022,NULL);
-INSERT INTO public.history VALUES (3,1,0,'2021-05-03', 5,1002, 4441,NULL);
-INSERT INTO public.history VALUES (4,1,0,'2021-05-04', 4,1492, 2316,NULL);
-INSERT INTO public.history VALUES (5,1,0,'2021-05-05', 8,1068, 360,NULL);
-INSERT INTO public.history VALUES (6,1,0,'2021-05-06',10,360, 3771.5,NULL);
-INSERT INTO public.history VALUES (7,1,0,'2021-05-07', 5,1385, 6090,NULL);
-INSERT INTO public.history VALUES (8,1,0,'2021-05-08', 4,2038, 3390,NULL);
-INSERT INTO public.history VALUES (9,1,0,'2021-05-09', 8,1455, 784,NULL);
+INSERT INTO public.trade VALUES (5,1,0,'2021-05-05', 5,0, 2,NULL);
+
+INSERT INTO public.trade VALUES (6,1,0,'2021-05-05', 8,-424, 17,NULL);
+INSERT INTO public.trade VALUES (7,1,0,'2021-05-07',10,-226, 27,NULL);
+INSERT INTO public.trade VALUES (8,1,0,'2021-05-08',8,0, 27,NULL);
+INSERT INTO public.trade VALUES (9,1,0,'2021-05-09', 5,543, 15,NULL);
+INSERT INTO public.trade VALUES (10,1,0,'2021-05-10', 4,653, 3,NULL);
+INSERT INTO public.trade VALUES (11,1,0,'2021-05-11', 5,0, 3,NULL);
+INSERT INTO public.trade VALUES (12,1,0,'2021-05-12', 8,-583, 24,NULL);
 
 
-INSERT INTO public.history VALUES (10,1,1,'2021-11-11', 24.75,1115, 27520,NULL);
+SELECT setval(pg_get_serial_sequence('public.trade', 'trade_id'), (SELECT MAX(trade_id) FROM public.trade)+1);
+ 
+INSERT INTO public.trade(user_id,stock_id,date_trade,stock_price,stock_quantity_traded,cash_added) VALUES (1,1,'2021-11-11', 24.65,1115, 0);
 
-INSERT INTO public.history VALUES (11,1,2,'2021-11-11', 117.0,128, 14976,NULL);
-INSERT INTO public.history VALUES (12,1,3,'2021-11-11', 2.95,10210, 30119.5,NULL);
-INSERT INTO public.history VALUES (13,1,4,'2021-11-11', 8.85,1026, 9080.1,NULL);
+INSERT INTO public.trade(user_id,stock_id,date_trade,stock_price,stock_quantity_traded,cash_added) VALUES (1,2,'2021-11-11', 114.55,128, 0);
+INSERT INTO public.trade(user_id,stock_id,date_trade,stock_price,stock_quantity_traded,cash_added) VALUES (1,3,'2021-11-11', 2.91,10210, 0);
+INSERT INTO public.trade(user_id,stock_id,date_trade,stock_price,stock_quantity_traded,cash_added) VALUES (1,4,'2021-11-11', 8.51,1026, 0);
+ 
+
+

@@ -59,11 +59,11 @@ function populatePropertyTable(properties) {
 			}
 		
 
-		}, {
-			"defaultContent" : '<button id="editProperty">Edit</button>'
-		}, {
-			"defaultContent" : '<button id="detailsProperty">Details</button>'
-		} ],
+		}, 
+		{"defaultContent" : '<button id="editProperty">Edit</button>'}, 
+		{"defaultContent" : '<button id="detailsProperty">Details</button>'} 
+		
+		],
 
 		dom : 'Bfrtip',
 		buttons : [ {
