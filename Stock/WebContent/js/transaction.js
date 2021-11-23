@@ -18,6 +18,7 @@ function makeGrid(){
 
 
 function fillStockData(stocksData){
+	$('#stocksDiv').html("");
 	  for (var stockSymbol in stocksData) {
           var linesData = stocksData[stockSymbol];
           fillTableData(stockSymbol,linesData);
@@ -26,11 +27,9 @@ function fillStockData(stocksData){
 
 
 function fillTableData(stockSymbol,linesData){
-	
-	removeTable("stocksTable_"+stockSymbol);
+	removeTable("stocksTable_" + stockSymbol);
 
-	
-	var stock_id=linesData.stock_id;
+	var stock_id = linesData.stock_id;
 	
 	$('#stocksDiv').append(
 			'<div id="stock_name_'+stockSymbol+'"></div>'
@@ -45,6 +44,7 @@ function fillTableData(stockSymbol,linesData){
 		"aaData" : linesData.trade,
 		"aoColumns" : [
 			{ "title" : "Trade Date", "mData": null, render: function ( data, type, row ) {
+				//console.log(data.cash);
 				return formatDateString(data.date);
 		      // return data.date.year+'-'+data.date.month+'-'+data.date.day;
 				//return "";

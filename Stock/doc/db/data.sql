@@ -89,6 +89,7 @@ CREATE TABLE public.trade
  stock_quantity_traded bigint,
  cash_added double precision,
  notes text,
+ active boolean,
   
 	CONSTRAINT user_id FOREIGN KEY (user_id)
 	REFERENCES public.user (user_id) MATCH SIMPLE
@@ -101,20 +102,20 @@ CREATE TABLE public.trade
 );
 
 
-INSERT INTO public.trade VALUES (1,1,0,'2021-05-01', 10,500, 22,NULL);
-INSERT INTO public.trade VALUES (2,1,0,'2021-05-02', 8,75, 19,NULL);
-INSERT INTO public.trade VALUES (3,1,0,'2021-05-03', 5,427, 10,NULL);
-INSERT INTO public.trade VALUES (4,1,0,'2021-05-04', 4,-490, 2,NULL);
+INSERT INTO public.trade VALUES (1,1,0,'2021-05-01', 10,500, 22,NULL,TRUE);
+INSERT INTO public.trade VALUES (2,1,0,'2021-05-02', 8,75, 19,NULL,TRUE);
+INSERT INTO public.trade VALUES (3,1,0,'2021-05-03', 5,427, 10,NULL,TRUE);
+INSERT INTO public.trade VALUES (4,1,0,'2021-05-04', 4,-490, 2,NULL,TRUE);
 
-INSERT INTO public.trade VALUES (5,1,0,'2021-05-05', 5,0, 2,NULL);
+INSERT INTO public.trade VALUES (5,1,0,'2021-05-05', 5,0, 2,NULL,TRUE);
 
-INSERT INTO public.trade VALUES (6,1,0,'2021-05-05', 8,-424, 17,NULL);
-INSERT INTO public.trade VALUES (7,1,0,'2021-05-07',10,-226, 27,NULL);
-INSERT INTO public.trade VALUES (8,1,0,'2021-05-08',8,0, 27,NULL);
-INSERT INTO public.trade VALUES (9,1,0,'2021-05-09', 5,543, 15,NULL);
-INSERT INTO public.trade VALUES (10,1,0,'2021-05-10', 4,653, 3,NULL);
-INSERT INTO public.trade VALUES (11,1,0,'2021-05-11', 5,0, 3,NULL);
-INSERT INTO public.trade VALUES (12,1,0,'2021-05-12', 8,-583, 24,NULL);
+INSERT INTO public.trade VALUES (6,1,0,'2021-05-05', 8,-424, 17,NULL,TRUE);
+INSERT INTO public.trade VALUES (7,1,0,'2021-05-07',10,-226, 27,NULL,TRUE);
+INSERT INTO public.trade VALUES (8,1,0,'2021-05-08',8,0, 27,NULL,TRUE);
+INSERT INTO public.trade VALUES (9,1,0,'2021-05-09', 5,543, 15,NULL,TRUE);
+INSERT INTO public.trade VALUES (10,1,0,'2021-05-10', 4,653, 3,NULL,TRUE);
+INSERT INTO public.trade VALUES (11,1,0,'2021-05-11', 5,0, 3,NULL,TRUE);
+INSERT INTO public.trade VALUES (12,1,0,'2021-05-12', 8,-583, 24,NULL,TRUE);
 
 
 SELECT setval(pg_get_serial_sequence('public.trade', 'trade_id'), (SELECT MAX(trade_id) FROM public.trade)+1);
