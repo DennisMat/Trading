@@ -39,51 +39,45 @@ function fillTableData(stockSymbol,linesData){
 
 	$( "#stock_name_"+stockSymbol ).text("Stock Symbol: "+ stockSymbol);
 	
+	
 	var stocksTable=$("#stocksTable_"+stockSymbol).DataTable({
 		//"bProcessing" : true,
-		"aaData" : linesData.trade,
+		"aaData" : linesData.trades,
 		"aoColumns" : [
 			{ "title" : "Trade Date", "mData": null, render: function ( data, type, row ) {
-				//console.log(data.cash);
-				return formatDateString(data.date);
-		      // return data.date.year+'-'+data.date.month+'-'+data.date.day;
-				//return "";
+				return formatDateString(data.date_trade);
 		    } }, 
-			{"sTitle"  :"Stock Price","mData" : "stockPrice"},
-			//{"sTitle"  : "Stock Value","mData" : "stockValue"},
-			//{"sTitle"  : "Safe","mData" : "safe"},
+			{"sTitle"  :"Stock Price","mData" : "stock_price"},
+
 			{"sTitle"  : "Cash","mData" : "cash"},
-			{"sTitle"  : "Shares buy and sell","mData" : "sharesBoughtSold"},
-			{"sTitle"  : "Stock Owned","mData" : "stockOwned"},
-			//{"sTitle"  : "Portfolio Control","mData" : "portfolioControl"},
-			//{"sTitle"  : "Buy or Sell Advise","mData" : "buyOrSellAdvice"},
-			//{"sTitle"  : "Market Order","mData" : "marketOrder"},
-			{"sTitle"  : "Cash Added","mData" : "interest"},
-			{"sTitle"  : "Portfolio Value","mData" : "portfolioValue"},
+			{"sTitle"  : "Shares Quantity","mData" : "stock_quantity_traded"},
+			{"sTitle"  : "Stock Owned","mData" : "stock_owned"},
+			{"sTitle"  : "Cash Added","mData" : "cash_added"},
+			{"sTitle"  : "Portfolio Value","mData" : "portfolio_value"},
 			{"sTitle"  : "Buy/Sell","mData" : "action"},
-			{"defaultContent" : '<button id="editTransaction_'+stockSymbol+'">Edit</button>'},
-			{"defaultContent" : '<button id="deleteTransaction_"'+stockSymbol+'>Delete</button>'}
+			{"defaultContent" : '<button id="editTrade_'+stockSymbol+'">Edit</button>'},
+			{"defaultContent" : '<button id="deleteTrade_'+stockSymbol+'">Delete</button>'}
 			],
 			dom : 'Bfrtip',
 			buttons : [ {
-				text : 'Add Transaction',
+				text : 'Add Trade',
 				action : function(e, dt, node, config) {
-					popUpTransactionForm(stock_id,null) ;	
+					popUpTradeForm(stock_id,null) ;	
 				}
 			} ]
 	
 	});	
 	
 	
-	$('#stocksTable tbody').on('click', '#deleteProperty_'+'stockSymbol', function() {
-		var transactionDetails = stocksTable.row($(this).parents('tr')).data();
-		//showPropertyChangeStatusDialog(propertyDetails);
+	$('#stocksTable_'+stockSymbol+' tbody').on('click', '#deleteTrade_'+stockSymbol, function() {
+		var tradeDetails = stocksTable.row($(this).parents('tr')).data();
+		showTradeDeleteDialog(tradeDetails);
 
 	});
 
-	$('#stocksTable tbody').on('click', '#editProperty_'+'stockSymbol', function() {
-		var transactionDetails = stocksTable.row($(this).parents('tr')).data();
-		popUpTransactionForm(stock_id,transactionDetails);
+	$('#stocksTable_'+stockSymbol+' tbody').on('click', '#editTrade_'+stockSymbol, function() {
+		var tradeDetails = stocksTable.row($(this).parents('tr')).data();
+		popUpTradeForm(stock_id,tradeDetails);
 	});
 	
 	var buyAdvice="Buy "+ linesData.buyPredict.sharesBoughtSold  +" shares for " + linesData.buyPredict.stockPrice 
@@ -95,14 +89,14 @@ function fillTableData(stockSymbol,linesData){
 }
 
 
-function popUpTransactionForm(stock_id,transactionDetails) {
+function popUpTradeForm(stock_id,tradeDetails) {
 
 	
 	$("#dialog").remove();
-	$(document.body).append('<div id="dialog" title="Transaction" style="display:none; min-width: 50px;">Its the money not the principles</div>');
-	$("#dialog").attr("title", "Transaction Entry");
+	$(document.body).append('<div id="dialog" title="Trade" style="display:none; min-width: 50px;">Its the money not the principles</div>');
+	$("#dialog").attr("title", "Trade Entry");
 
-	$("#dialog").load("include/transaction.html?" + Math.random(), function() {
+	$("#dialog").load("include/trade.html?" + Math.random(), function() {
 
 		$("#date_trade").datepicker({
 			dateFormat : 'yy-mm-dd'
@@ -110,18 +104,18 @@ function popUpTransactionForm(stock_id,transactionDetails) {
 		
 		$("#stock_id").attr("value", stock_id);
 		
-		if (transactionDetails!=null) {
-			$("#trade_id").attr("value", transactionDetails.trade_id);
-			$("#date_trade").attr("value", transactionDetails.date_trade);
-			$("#stock_quantity_traded").attr("value", transactionDetails.stock_quantity_traded);	
-			$("#stock_price").attr("value", transactionDetails.stock_price);
-			$("#cash_added").attr("value", transactionDetails.cash_added);
-			$("#notes").attr("value", transactionDetails.notes);
+		if (tradeDetails!=null) {
+			$("#trade_id").attr("value", tradeDetails.trade_id);
+			$("#date_trade").attr("value", tradeDetails.date_trade);
+			$("#stock_quantity_traded").attr("value", tradeDetails.stock_quantity_traded);	
+			$("#stock_price").attr("value", tradeDetails.stock_price);
+			$("#cash_added").attr("value", tradeDetails.cash_added);
+			$("#notes").attr("value", tradeDetails.notes);
 		}
 
 		
 		
-		$("#transaction_submit_button").on('click', function(e) {
+		$("#trade_submit_button").on('click', function(e) {
 			e.preventDefault();
 
 			var trade = {
@@ -149,10 +143,7 @@ function popUpTransactionForm(stock_id,transactionDetails) {
 				data : JSON.stringify(trade), // post data || get data
 				headers: { 'action': 'insert_trade'},
 				success : function(stocksData) {
-	
-					//console.log(result);
 					$("body").css("cursor", "default");
-					//fillTableData(stockSymbol,linesData)
 					fillStockData(stocksData);
 					$('#dialog').dialog('close');
 					
@@ -178,3 +169,52 @@ function popUpTransactionForm(stock_id,transactionDetails) {
 	
 }
 
+
+function showTradeDeleteDialog(tradeDetails) {
+	
+	var message="Are you sure that you want to delete this trade?";
+		
+
+	$("#dialog").remove()
+	$(document.body).append('<div id="dialog" title="Delete trade" style="display:none;">'+message+'</div>');
+	$("#dialog").dialog({
+		resizable : false,
+		height : "auto",
+		width : 400,
+		modal : true,
+		buttons : {
+			"Yes" : function() {
+
+				$("body").css("cursor", "progress");
+
+				$.ajax({
+					url : 'processrequest',
+					type : "POST", // type of action POST || GET
+					contentType : "application/json; charset=utf-8",
+					dataType : 'json', // data type
+					headers : {
+						'action' : 'delete_trade'
+					},
+					data : JSON.stringify(tradeDetails), 
+					success : function(stocksData) {
+						$("body").css("cursor", "default");
+						fillStockData(stocksData);
+						$('#dialog').dialog('close');
+
+					},
+					error : function(xhr, resp, text) {
+						console.log(xhr, resp, text);
+						$("body").css("cursor", "default");
+						$('#dialog').dialog('close');
+					}
+				})
+
+				$(this).dialog("close");
+			},
+			Cancel : function() {
+				$(this).dialog("close");
+			}
+		}
+	});
+
+}

@@ -19,11 +19,35 @@ public class Trade {
 	public long user_id;
 	public long stock_id;
 	public LocalDate date_trade;
-	public double cash_added;
 	public double stock_price;
 	public long stock_quantity_traded;
+	public long stock_owned;
+	public double cash;
+	public double portfolio_value;
+	public double cash_added;
 	public String notes;
-	public boolean active;
+	public Action action;
+
+
+
+	public Trade(long trade_id, long user_id, long stock_id, LocalDate date_trade, double stock_price, long stock_quantity_traded, long stock_owned, double cash, double portfolio_value,
+			double cash_added, String notes, Action action) {
+		super();
+		this.trade_id = trade_id;
+		this.user_id = user_id;
+		this.stock_id = stock_id;
+		this.date_trade = date_trade;
+		this.stock_price = stock_price;
+		this.stock_quantity_traded = stock_quantity_traded;
+		this.stock_owned = stock_owned;
+		this.cash = cash;
+		this.portfolio_value = portfolio_value;
+		this.cash_added = cash_added;
+		this.notes = notes;
+		this.action = action;
+	}
+
+
 
 	public static Map getLines(long user_id) {
 		Map<String, Map> h = new HashMap<String, Map>();
@@ -31,7 +55,7 @@ public class Trade {
 
 		try {
 			if (conn != null) {
-				//PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE  user_id= ? ");
+				// PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? ");
 				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE stock_id=1 AND user_id= ? ");
 				stmt.setLong(1, user_id);
 				ResultSet rst = stmt.executeQuery();
@@ -48,9 +72,12 @@ public class Trade {
 		return h;
 	}
 
+
+
 	public static Map getLines(long user_id, long stock_id) {
 		Map h = new HashMap();
 		List<Line> lines = new ArrayList<Line>();
+		List<Trade> trades = new ArrayList<Trade>();
 
 		Connection conn = DB.getConnection();
 		if (!Individual.hasAccess(user_id, stock_id)) {
@@ -93,8 +120,12 @@ public class Trade {
 					}
 
 					lines.add(line);
-					// System.out.print("\n");
-					// line.printValues();
+
+	
+					trades.add(new Trade(rst.getLong("trade_id"),user_id, stock_id, line.date, 
+							line.stockPrice,line.sharesBoughtSold,line.stockOwned,
+							line.cash, line.portfolioValue, 
+							line.interest, rst.getString("notes"),line.action));
 				}
 
 				Line lastLine = prevLine;
@@ -106,9 +137,9 @@ public class Trade {
 					test(lines, bp, sp);
 				}
 
-				//prevLine.interest = 0;
+				// prevLine.interest = 0;
 				h.put("stock_id", stock_id);
-				h.put("trade", lines);
+				h.put("trades", trades);
 				h.put("buyPredict", bp);
 				h.put("sellPredict", sp);
 
@@ -123,18 +154,38 @@ public class Trade {
 		return h;
 	}
 
+	public static long updateTradeRecord(long user_id, Trade t) {
+
+		long tradeId = 0;
+		Connection conn = DB.getConnection();
+		try {
+			if (conn != null) {
+				String update = "UPDATE  trade set active=false where trade_id=? AND user_id=?  RETURNING  trade_id";
+
+				if (t.trade_id > 0) {
+					PreparedStatement stmtUpdate = conn.prepareStatement(update);
+					stmtUpdate.setLong(1, t.trade_id);
+					stmtUpdate.setLong(2, user_id);
+					stmtUpdate.executeQuery();
+					ResultSet rst = stmtUpdate.executeQuery();
+					if (rst.next()) {
+						tradeId = rst.getLong(1);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DB.closeConnection(conn);
+		}
+		return tradeId;
+	}
+
 	public static long insertUpdateTradeRecord(long user_id, Trade t) {
 		long tradeId = 0;
 		String insert = "INSERT INTO trade VALUES (DEFAULT,?,?,?,?,?,?,?,?) RETURNING  trade_id";
-		String update = "UPDATE  trade set active=false where trade_id=? AND user_id=?  RETURNING  trade_id";
-
-		String stm = null;
-		if (t.trade_id == 0) {
-			stm = insert;
-		} else {
-			stm = update;
-			tradeId = t.trade_id;
-		}
 
 		Connection conn = DB.getConnection();
 		try {
@@ -156,10 +207,7 @@ public class Trade {
 				}
 
 				if (t.trade_id > 0) {
-					PreparedStatement stmtUpdate = conn.prepareStatement(update);
-					stmtUpdate.setLong(1, t.trade_id);
-					stmtUpdate.setLong(2, user_id);
-					stmtUpdate.executeQuery();
+					updateTradeRecord(user_id, t);
 				}
 
 			}
