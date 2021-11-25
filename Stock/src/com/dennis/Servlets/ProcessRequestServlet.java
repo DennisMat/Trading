@@ -35,28 +35,22 @@ import com.google.gson.JsonParseException;
 @WebServlet(name = "ProcessRequestServlet", urlPatterns = "/processrequest")
 public class ProcessRequestServlet extends HttpServlet {
 
-	private static final Gson gson = new GsonBuilder()
-			.registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
-				@Override
-				public LocalDate deserialize(JsonElement json, Type type,
-						JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-					return LocalDate.parse(json.getAsJsonPrimitive().getAsString());
-				}
-			}).create();
+	private static final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
+		@Override
+		public LocalDate deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			return LocalDate.parse(json.getAsJsonPrimitive().getAsString());
+		}
+	}).create();
 
 	public ProcessRequestServlet() {
 		// TODO Auto-generated constructor stub
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
-	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		Map<String, String> headers = Util.getHeaders(request);
 
@@ -66,12 +60,9 @@ public class ProcessRequestServlet extends HttpServlet {
 
 		transactionMethods(request, response, headers, action);
 
-
-
 	}// end of do post
 
-	void authMethods(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers,
-			String action) {
+	void authMethods(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers, String action) {
 
 		String user_name = headers.get("user_name");
 		String user_password = headers.get("user_password");
@@ -108,9 +99,7 @@ public class ProcessRequestServlet extends HttpServlet {
 		}
 	}
 
-
-	void transactionMethods(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers,
-			String action) {
+	void transactionMethods(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers, String action) {
 		long userId = Util.getUserInSession(request);
 		try {
 			if (action.equals("get_stock_data")) {
@@ -118,15 +107,15 @@ public class ProcessRequestServlet extends HttpServlet {
 				Util.sendResponseToClient(response, gson.toJson(results));
 			}
 			if (action.equals("insert_trade")) {
-				Trade t = gson.fromJson(request.getReader(), Trade.class);		
-				if (Trade.insertUpdateTradeRecord(userId,t) > 0) {	
+				Trade t = gson.fromJson(request.getReader(), Trade.class);
+				if (Trade.insertUpdateTradeRecord(userId, t) > 0) {
 					Map results = Trade.getLines(userId);
 					Util.sendResponseToClient(response, gson.toJson(results));
 				}
 			}
 			if (action.equals("delete_trade")) {
-				Trade t = gson.fromJson(request.getReader(), Trade.class);		
-				if (Trade.updateTradeRecord(userId,t) > 0) {	
+				Trade t = gson.fromJson(request.getReader(), Trade.class);
+				if (Trade.updateTradeRecord(userId, t) > 0) {
 					Map results = Trade.getLines(userId);
 					Util.sendResponseToClient(response, gson.toJson(results));
 				}
@@ -135,7 +124,5 @@ public class ProcessRequestServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-
-
 
 }

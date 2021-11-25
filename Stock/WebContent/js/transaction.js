@@ -106,7 +106,7 @@ function popUpTradeForm(stock_id,tradeDetails) {
 		
 		if (tradeDetails!=null) {
 			$("#trade_id").attr("value", tradeDetails.trade_id);
-			$("#date_trade").attr("value", tradeDetails.date_trade);
+			$("#date_trade").datepicker("setDate", formatDateString(tradeDetails.date_trade));
 			$("#stock_quantity_traded").attr("value", tradeDetails.stock_quantity_traded);	
 			$("#stock_price").attr("value", tradeDetails.stock_price);
 			$("#cash_added").attr("value", tradeDetails.cash_added);
@@ -187,6 +187,11 @@ function showTradeDeleteDialog(tradeDetails) {
 
 				$("body").css("cursor", "progress");
 
+				//we just need the id of th etrade to be deleted.
+				var tradeToBeDeleted = {			
+						'trade_id' : tradeDetails.trade_id			
+					};
+				
 				$.ajax({
 					url : 'processrequest',
 					type : "POST", // type of action POST || GET
@@ -195,7 +200,7 @@ function showTradeDeleteDialog(tradeDetails) {
 					headers : {
 						'action' : 'delete_trade'
 					},
-					data : JSON.stringify(tradeDetails), 
+					data : JSON.stringify(tradeToBeDeleted), 
 					success : function(stocksData) {
 						$("body").css("cursor", "default");
 						fillStockData(stocksData);
