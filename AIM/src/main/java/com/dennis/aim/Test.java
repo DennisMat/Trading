@@ -11,11 +11,12 @@ public class Test {
 		};
 		double[] interest = { 22, 19, 10, 2, 2, 17, 27, 27, 15, 3, 3, 24 };
 		// ,38,38,22,6,6,34,53,53,31,10,10,48};
-		double[] expectedPortfolioValues = { 10000, 9022, 7316, 6324, 7818, 12296, 14451.5f, 12799, 10300, 8930, 10971,
-				17088 };
-		double[] expectedCash = { 5000, 5022, 4441, 2316, 358, 360, 3771.5f, 6063, 6090, 3390, 781, 784 };
+
+		double[] expectedPortfolioValues = { 10000, 9022, 7316, 6324, 7818, 12296, 14449f, 12792, 10293, 8923, 10964, 17081 };
+		double[] expectedCash = { 5000, 5022, 4441, 2316, 358, 360, 3769f, 6056, 6083, 3383, 774, 777 };
 		double startingAmount = 10000;
-		
+
+
 		Line.isTest=true;
 		Line.print=true;
 		
@@ -30,7 +31,7 @@ public class Test {
 		boolean testsPassed=true;
 		for (int i = 0; i < interest.length; i++) {
 
-			Line l = Line.getNewLine(null, prevLine, stockPrice[i], interest[i]);
+			Line l = Line.getNewLine(null, stockPrice[i], 0,interest[i], prevLine);
 			 l.printValues();
 			// System.out.println();
 			if (expectedPortfolioValues[i] != l.portfolioValue || expectedCash[i] != l.cash) {

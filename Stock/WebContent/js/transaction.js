@@ -127,10 +127,12 @@ function popUpTradeForm(stock_id,tradeDetails) {
 				'cash_added' : $('input[id=cash_added]').val(),
 				'notes' : $('input[id=notes]').val()			
 			};
+			if(trade.cash_added==""){
+				trade.cash_added=0;
+			}
 			
 			if($('input[id=trade_id]').val().length>0){
 				trade.trade_id=$('input[id=trade_id]').val();
-				//trade.trade_id=0;
 			}
 
 			$("body").css("cursor", "progress");

@@ -55,8 +55,8 @@ public class Trade {
 
 		try {
 			if (conn != null) {
-				// PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? ");
-				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE stock_id=1 AND user_id= ? ");
+				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? ");
+				//PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE stock_id in(0) AND user_id= ? ");
 				stmt.setLong(1, user_id);
 				ResultSet rst = stmt.executeQuery();
 
@@ -102,12 +102,18 @@ public class Trade {
 						prevLine.date = rst.getObject("date_trade", LocalDate.class);
 						prevLine.action = Action.BUY;
 						prevLine.interest = rst.getDouble("cash_added");
+						prevLine.sharesBoughtSold = rst.getLong("stock_quantity_traded");
 						line = prevLine;
 
 					} else {
-						line = Line.getNewLine(rst.getObject("date_trade", LocalDate.class), prevLine, rst.getDouble("stock_price"), rst.getDouble("cash_added"));
+						line = Line.getNewLine(rst.getObject("date_trade", LocalDate.class), 
+								rst.getDouble("stock_price"),rst.getLong("stock_quantity_traded"), rst.getDouble("cash_added"), prevLine);
 						// The figure in line.sharesBoughtSold is an advise to buy/sell not the actual figure
-						line.sharesBoughtSold = rst.getLong("stock_quantity_traded");
+						//line.sharesBoughtSold = rst.getLong("stock_quantity_traded");
+						
+						//line.cash -=line.sharesBoughtSold*rst.getDouble("stock_price");
+	
+						
 						if (line.sharesBoughtSold == 0) {
 							line.action = Action.DO_NOTHING;
 						} else if (line.sharesBoughtSold > 0) {
@@ -225,8 +231,8 @@ public class Trade {
 	static void test(List<Line> lines, Line bp, Line sp) {
 
 		double[] interest = { 22, 19, 10, 2, 2, 17, 27, 27, 15, 3, 3, 24 };
-		double[] expectedPortfolioValues = { 10000, 9022, 7316, 6324, 7818, 12296, 14451.5f, 12799, 10300, 8930, 10971, 17088 };
-		double[] expectedCash = { 5000, 5022, 4441, 2316, 358, 360, 3771.5f, 6063, 6090, 3390, 781, 784 };
+		double[] expectedPortfolioValues = { 10000, 9022, 7316, 6324, 7818, 12296, 14449f, 12792, 10293, 8923, 10964, 17081 };
+		double[] expectedCash = { 5000, 5022, 4441, 2316, 358, 360, 3769f, 6056, 6083, 3383, 774, 777 };
 
 		final double expectedBuyPrice = 6.190000040456653f;
 		long expectedBuyQuantity = 17;
@@ -240,6 +246,10 @@ public class Trade {
 		for (int i = 0; i < interest.length; i++) {
 			if (expectedPortfolioValues[i] != lines.get(i).portfolioValue || expectedCash[i] != lines.get(i).cash) {
 				System.out.println("TEST FAILED on record " + i);
+				
+					System.out.println("expectedPortfolioValue= " +expectedPortfolioValues[i] + "  obtained=" + lines.get(i).portfolioValue);
+					System.out.println("expectedCash= " +expectedCash[i] + "  obtained=" + lines.get(i).cash);
+				
 				testsPassed = false;
 				break;
 			}
@@ -261,13 +271,13 @@ public class Trade {
 			}
 
 		}
-
+		System.out.println("================================================");
 		if (testsPassed) {
 			System.out.println("TEST PASSED");
 		} else {
 			System.out.println("TEST FAILED");
 		}
-
+		System.out.println("================================================");
 	}
 
 }

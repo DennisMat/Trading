@@ -5,17 +5,18 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
+//import org.apache.commons.io.FileUtils;
 
 import com.dennis.models.Line.Action;
-
+import java.lang.reflect.*;
 
 public class Line {
 
 	// sometimes the price is zero and these figures have to be skipped.
 	static final double MINIMUM_PRICE = 0.001f;
-	static boolean isTest=false;
-	static boolean print=false;
-	static boolean writeToFile=false;
+	static boolean isTest = false;
+	static boolean print = false;
+	static boolean writeToFile = false;
 
 	public LocalDate date;
 	public double stockPrice;
@@ -39,7 +40,7 @@ public class Line {
 	public void writeHeader(String outputFile) throws IOException {
 		if (outputFile != null) {
 			File output = new File(outputFile);
-			//FileUtils.write(output, "\n" + getHeaderRow(), StandardCharsets.UTF_8, true);
+			// FileUtils.write(output, "\n" + getHeaderRow(), StandardCharsets.UTF_8, true);
 		}
 
 	}
@@ -53,12 +54,9 @@ public class Line {
 		StringBuffer sb = new StringBuffer();
 		String[] headers = { "Date", "Stock Price", "Stock Value", "Safe", "Cash", "Shares buy and sell", "Stock Owned", "Portfolio Control", "Buy or Sell Advise", "Market Order", "interest",
 				"Portfolio Value", "Action" };
-		
-		String[] headerLine2 = { "", "", "", "Stock Value/10", 
-				"", "", "", "Prev PortfolioControl - MarketOrder / 2", 
-				"StockValue - Prev PortfolioControl", "Buy & Sell - safe", "",
-				"", "" };
-		
+
+		String[] headerLine2 = { "", "", "", "Stock Value/10", "", "", "", "Prev PortfolioControl - MarketOrder / 2", "StockValue - Prev PortfolioControl", "Buy & Sell - safe", "", "", "" };
+
 		for (int i = 0; i < headers.length; i++) {
 			sb.append(headers[i] + "\t");
 		}
@@ -71,14 +69,15 @@ public class Line {
 	}
 
 	public void printValues() {
-		//if (action != Action.DO_NOTHING) {
-			System.out.print("\n" + getRowValues());
-		//}
+		// if (action != Action.DO_NOTHING) {
+		System.out.print("\n" + getRowValues());
+		// }
 	}
 
 	public void writeValues(String outputFile) throws IOException {
 		if (outputFile != null && action != Action.DO_NOTHING) {
 			File output = new File(outputFile);
+			//FileUtils.write(output, "\n" + getRowValues(), StandardCharsets.UTF_8, true);
 		}
 
 	}
@@ -104,12 +103,12 @@ public class Line {
 	 * remains the same, else if buy newPortfolioControl = portfolioControl + marketOrder / 2;
 	 * 
 	 */
-
-	public Line(LocalDate date, long prevStocksOwned, double prevCash, double stockPrice, double prevSharesBoughtSold, double prevPortfolioControl, double prevMarketOrder, Action prevAction,
-			double prevInterest, double interest) {
+	public Line(LocalDate date, double stockPrice, long stocksTraded, double interest, long prevStocksOwned, double prevCash, double prevSharesBoughtSold, double prevPortfolioControl,
+			double prevMarketOrder, Action prevAction, double prevInterest) {
 
 		this.date = date;
 		this.stockPrice = stockPrice;
+
 		this.stockOwned = prevStocksOwned;
 
 		stockValue = this.stockOwned * stockPrice;
@@ -117,61 +116,69 @@ public class Line {
 		safe = Math.round(stockValue / 10);
 
 		this.cash = prevCash + prevInterest + prevMarketOrder;
-		
+
 		this.interest = interest;
 
 		portfolioValue = stockValue + cash;
 
-		// if positive sell
-		buyOrSellAdvice = stockValue - prevPortfolioControl;
+		if (stocksTraded == 0) {// if it's transaction then do not do any calculation
 
-		// safe is like a threshold, only if abs (buyOrSellAdvice) is above safe you
-		// sell or buy
-		if (safe > Math.abs(buyOrSellAdvice)) {
-			action = Action.DO_NOTHING;
-		} else {
+			// if positive sell
+			buyOrSellAdvice = stockValue - prevPortfolioControl;
 
-			double potentialMarketorder = Math.abs(safe - Math.abs(buyOrSellAdvice));
-
-			if (buyOrSellAdvice > 0) {// if sell make sure there are sufficient stocks to sell
-				if (stockValue < potentialMarketorder) {
-					potentialMarketorder = stockValue;
-				}
-			}
-
-			if (buyOrSellAdvice < 0) {// if buy make sure there is sufficient cash
-				if (this.cash < potentialMarketorder) {
-					potentialMarketorder = this.cash;
-				}
-			}
-
-			if (potentialMarketorder > getMinimumMarketOrder(stockValue)) {
-				marketOrder = potentialMarketorder;
-				sharesBoughtSold = Math.round(potentialMarketorder / stockPrice);
-				if(sharesBoughtSold==0) {
-					marketOrder = 0;//make market order 0 if no shares are bought.
-				}
-			
-			}
-			
-			
-			// sharesBoughtSold==0 happens when the cost of a single stock is higher than the market order
-			if ( sharesBoughtSold == 0) {
+			// safe is like a threshold, only if abs (buyOrSellAdvice) is above safe you
+			// sell or buy
+			if (safe > Math.abs(buyOrSellAdvice)) {
 				action = Action.DO_NOTHING;
-				//this.interest = 0;// no commission if shares are not
-			} else if (buyOrSellAdvice > 0) {
+			} else {
+
+				double potentialMarketorder = Math.abs(safe - Math.abs(buyOrSellAdvice));
+
+				if (buyOrSellAdvice > 0) {// if sell make sure there are sufficient stocks to sell
+					if (stockValue < potentialMarketorder) {
+						potentialMarketorder = stockValue;
+					}
+				}
+
+				if (buyOrSellAdvice < 0) {// if buy make sure there is sufficient cash
+					if (this.cash < potentialMarketorder) {
+						potentialMarketorder = this.cash;
+					}
+				}
+
+				if (potentialMarketorder > getMinimumMarketOrder(stockValue)) {
+					marketOrder = potentialMarketorder;
+					sharesBoughtSold = Math.round(potentialMarketorder / stockPrice);
+					if (sharesBoughtSold == 0) {
+						marketOrder = 0;// make market order 0 if no shares are bought.
+					} else {
+
+					}
+				}
+			}
+
+			if (buyOrSellAdvice > 0) {
 				action = Action.SELL;
 				sharesBoughtSold = -sharesBoughtSold;
-			} else if (buyOrSellAdvice < 0) {
-				// One could have used marketOrder=-marketOrder, here instead but we want
-				// rounded figures
-				// marketOrder=-marketOrder;
-				marketOrder = -Math.round(sharesBoughtSold * stockPrice);
-				action = Action.BUY;
 			}
 
-			this.stockOwned += sharesBoughtSold;
+		} else {
+			sharesBoughtSold = stocksTraded;
+
 		}
+
+		if (sharesBoughtSold == 0) {
+			action = Action.DO_NOTHING;
+		} else if (sharesBoughtSold > 0) {
+
+			action = Action.BUY;
+		} else {
+			action = Action.SELL;
+		}
+
+		marketOrder = -Math.round(sharesBoughtSold * stockPrice);
+
+		this.stockOwned += sharesBoughtSold;
 
 		if (action == Action.SELL) {
 			portfolioControl = prevPortfolioControl;
@@ -180,12 +187,12 @@ public class Line {
 		}
 
 	}
-	
-	double getMinimumMarketOrder(double stockValue){
-		double minimumMarketOrder= stockValue/(10*5);
-		
-		if(minimumMarketOrder <250) {
-			minimumMarketOrder=100;
+
+	double getMinimumMarketOrder(double stockValue) {
+		double minimumMarketOrder = stockValue / (10 * 5);
+
+		if (minimumMarketOrder < 250) {
+			minimumMarketOrder = 100;
 		}
 		return minimumMarketOrder;
 	}
@@ -207,7 +214,7 @@ public class Line {
 
 		return getFirstLine(date, startingStockPrice, startingAmount, startingInterest);
 	}
-	
+
 	public static Line getFirstLine(LocalDate date, double startingStockPrice, double startingAmount, double startingInterest) {
 		Line lineFirst = new Line();
 
@@ -251,38 +258,38 @@ public class Line {
 
 		Line prevLine = lineInt;
 		for (int i = 0; i < stockPrice.length; i++) {
-			Line l = getNewLine(dates[i], prevLine, stockPrice[i], interest);
+			Line l = getNewLine(dates[i], stockPrice[i], 0, interest, prevLine);
 			if (print) {
 				l.printValues();
 			}
-			//l.writeValues(outputFile);
+			// l.writeValues(outputFile);
 			prevLine = l;
-			
+
 		}
 
-		String finalPortfolioValue = "\tLast stock value = "+ prevLine.stockPrice+".Final Portfolio Value is \t" + (int) Math.ceil(prevLine.portfolioValue);
+		String finalPortfolioValue = "\tLast stock value = " + prevLine.stockPrice + ".Final Portfolio Value is \t" + (int) Math.ceil(prevLine.portfolioValue);
 		// System.out.println(finalPortfolioValue);
 		if (outputFile != null && !outputFile.equals("")) {
 			File output = new File(outputFile);
+			//FileUtils.write(output, finalPortfolioValue, StandardCharsets.UTF_8, true);
 		}
 
 	}
 
-	public static Line getNewLine(LocalDate date, Line prevLine, double stockPrice, double interest) {
+	public static Line getNewLine(LocalDate date, double stockPrice, long stocksTraded, double interest, Line prevLine) {
 
 		if (stockPrice < MINIMUM_PRICE) {
 			prevLine.date = date;
 			return prevLine;
 		}
-		return new Line(date, prevLine.stockOwned, prevLine.cash, stockPrice, prevLine.sharesBoughtSold, prevLine.portfolioControl, prevLine.marketOrder, prevLine.action, prevLine.interest, interest);
+		return new Line(date, stockPrice, stocksTraded, interest, prevLine.stockOwned, prevLine.cash, prevLine.sharesBoughtSold, prevLine.portfolioControl, prevLine.marketOrder, prevLine.action,
+				prevLine.interest);
 	}
-
 
 	static void predict(Line lastLine, final double incrementPrice) {
 		findBuyLimit(lastLine, incrementPrice);
 		findSellLimit(lastLine, incrementPrice);
 	}
-
 
 	static Line findBuyLimit(Line lastLine, final double incrementPrice) {
 		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.BUY, lastLine.interest);
@@ -305,7 +312,7 @@ public class Line {
 				stockPriceForSellBuy -= incrementPrice;
 			}
 
-			l = Line.getNewLine(null, prevLine, stockPriceForSellBuy, interest);
+			l = Line.getNewLine(null, stockPriceForSellBuy, 0, interest, prevLine);
 
 			if (l.action == action || loopCount > 1000000000) {
 				System.out.println();
