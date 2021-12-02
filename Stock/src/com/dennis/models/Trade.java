@@ -55,8 +55,8 @@ public class Trade {
 
 		try {
 			if (conn != null) {
-				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? ");
-				//PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE stock_id in(0) AND user_id= ? ");
+				//PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? ");
+				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE stock_id in(1) AND user_id= ? ");
 				stmt.setLong(1, user_id);
 				ResultSet rst = stmt.executeQuery();
 
@@ -93,6 +93,7 @@ public class Trade {
 
 				Line prevLine = null;
 
+				double lastStockPrice=0;
 				while (rst.next()) {
 
 					Line line = null;
@@ -107,27 +108,17 @@ public class Trade {
 
 					} else {
 						line = Line.getNewLine(rst.getObject("date_trade", LocalDate.class), 
-								rst.getDouble("stock_price"),rst.getLong("stock_quantity_traded"), rst.getDouble("cash_added"), prevLine);
-						// The figure in line.sharesBoughtSold is an advise to buy/sell not the actual figure
-						//line.sharesBoughtSold = rst.getLong("stock_quantity_traded");
-						
-						//line.cash -=line.sharesBoughtSold*rst.getDouble("stock_price");
+								rst.getDouble("stock_price"),rst.getLong("stock_quantity_traded"), rst.getDouble("cash_added"), prevLine, true);
 	
-						
-						if (line.sharesBoughtSold == 0) {
-							line.action = Action.DO_NOTHING;
-						} else if (line.sharesBoughtSold > 0) {
-							line.action = Action.BUY;
-						} else {
-							line.action = Action.SELL;
-						}
-
 						prevLine = line;
 					}
 
 					lines.add(line);
 
 	
+					if(line.stockPrice>0) {
+						lastStockPrice=line.stockPrice;
+					}
 					trades.add(new Trade(rst.getLong("trade_id"),user_id, stock_id, line.date, 
 							line.stockPrice,line.sharesBoughtSold,line.stockOwned,
 							line.cash, line.portfolioValue, 
@@ -136,6 +127,11 @@ public class Trade {
 
 				Line lastLine = prevLine;
 				final double incrementPrice = 0.01f;
+				
+				if(lastLine.stockPrice==0) {
+					lastLine.stockPrice=lastStockPrice;
+				}
+				
 				Line bp = Line.findBuyLimit(lastLine, incrementPrice);
 				Line sp = Line.findSellLimit(lastLine, incrementPrice);
 
@@ -143,7 +139,6 @@ public class Trade {
 					test(lines, bp, sp);
 				}
 
-				// prevLine.interest = 0;
 				h.put("stock_id", stock_id);
 				h.put("trades", trades);
 				h.put("buyPredict", bp);
@@ -158,6 +153,20 @@ public class Trade {
 		}
 
 		return h;
+	}
+	
+	public static Map generateTradeAdvice(long user_id, Trade t) {
+		
+		Map h = new HashMap();
+		Line line = new Line();
+
+		line.stockPrice=42;
+		line.action=Action.BUY;
+
+		h.put("advise", line);
+		
+		return h;
+		
 	}
 
 	public static long updateTradeRecord(long user_id, Trade t) {

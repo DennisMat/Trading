@@ -35,8 +35,13 @@ function fillTableData(stockSymbol,linesData){
 			'<div id="stock_name_'+stockSymbol+'"></div>'
 			+'<div><table id="stocksTable_'+stockSymbol+'" class="display compact" style="width: 100%"></table></div>'
 			+'<div id="buyAdvice_'+stockSymbol+'"></div>'
-			+'<div id="sellAdvice_'+stockSymbol+'"></div> <br><br><br>');
-
+			+'<div id="sellAdvice_'+stockSymbol+'"></div>'
+        	+'<div id="div_current_advice_'+stockSymbol+'">Current stock price: <input type="number" id="current_stock_price_'+stockSymbol
+        	+'"> <input type="submit" id="current_stock_price_submit_button_'+stockSymbol
+        	+'" value="Find"><span id="current_advice_'+stockSymbol+'"></span> </div>'
+        	+ '<div style="background-color:#8ebf42;height: 20px;"></div>'
+	);
+	
 	$( "#stock_name_"+stockSymbol ).text("Stock Symbol: "+ stockSymbol);
 	
 	
@@ -80,6 +85,39 @@ function fillTableData(stockSymbol,linesData){
 		popUpTradeForm(stock_id,tradeDetails);
 	});
 	
+	
+	
+	$('#current_stock_price_submit_button_'+stockSymbol).on('click', function() { 
+		
+	var trade = {
+
+				'stock_price' :$('#current_stock_price_'+stockSymbol).val()
+
+			};
+			
+	
+		$.ajax({
+			url : 'processrequest', // url where to submit the request
+			type : "POST", // type of action POST || GET
+			contentType : "application/json; charset=utf-8",
+			dataType : 'json', // data type
+			data : JSON.stringify(trade), // post data || get data
+			headers: { 'action': 'trade_advice'},
+			success : function(response) {
+
+				var advice="Buy "+ response.advise.sharesBoughtSold  +" shares for " + response.advise.stockPrice 
+				$("#current_advice_"+stockSymbol).html(advice);
+				
+				
+			},
+			error : function(xhr, resp, text) {
+				console.log(xhr, resp, text);
+			
+			}
+		});
+		
+	});
+	
 	var buyAdvice="Buy "+ linesData.buyPredict.sharesBoughtSold  +" shares for " + linesData.buyPredict.stockPrice 
 	var sellAdvice="Sell "+ linesData.sellPredict.sharesBoughtSold  +" shares for " + linesData.sellPredict.stockPrice 
 	
@@ -117,6 +155,9 @@ function popUpTradeForm(stock_id,tradeDetails) {
 		
 		$("#trade_submit_button").on('click', function(e) {
 			e.preventDefault();
+			
+			
+			
 
 			var trade = {
 				
@@ -125,10 +166,27 @@ function popUpTradeForm(stock_id,tradeDetails) {
 				'stock_quantity_traded' : $('input[id=stock_quantity_traded]').val(),
 				'stock_price' :$('input[id=stock_price]').val(),
 				'cash_added' : $('input[id=cash_added]').val(),
-				'notes' : $('input[id=notes]').val()			
+				'notes' : $('#notes').val(),
 			};
+			
+			
 			if(trade.cash_added==""){
 				trade.cash_added=0;
+			}
+			if(trade.stock_quantity_traded==""){
+				trade.stock_quantity_traded=0;
+			}
+			if(trade.stock_price==""){
+				trade.stock_price=0;
+			}
+			if(trade.cash_added==0 && trade.stock_quantity_traded==0){
+				alert("Either Cash or Shares traded will have to be non-zero");
+				return false;
+			}
+			
+			if( trade.stock_quantity_traded % 1 !=0){
+				alert("Shares traded has to be a whole number");
+				return false;
 			}
 			
 			if($('input[id=trade_id]').val().length>0){

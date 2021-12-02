@@ -313,8 +313,6 @@ function popUpParkingForm(property_id,parking) {
 			
 		}
 
-		
-		
 		$("#parking_submit_button").on('click', function(e) {
 			e.preventDefault();
 
