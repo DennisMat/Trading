@@ -28,8 +28,6 @@ public class Trade {
 	public String notes;
 	public Action action;
 
-
-
 	public Trade(long trade_id, long user_id, long stock_id, LocalDate date_trade, double stock_price, long stock_quantity_traded, long stock_owned, double cash, double portfolio_value,
 			double cash_added, String notes, Action action) {
 		super();
@@ -47,16 +45,14 @@ public class Trade {
 		this.action = action;
 	}
 
-
-
 	public static Map getLines(long user_id) {
 		Map<String, Map> h = new HashMap<String, Map>();
 		Connection conn = DB.getConnection();
 
 		try {
 			if (conn != null) {
-				//PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? ");
-				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE stock_id in(1) AND user_id= ? ");
+				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? ");
+				//PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE stock_id in(1) AND user_id= ? ");
 				stmt.setLong(1, user_id);
 				ResultSet rst = stmt.executeQuery();
 
@@ -72,9 +68,11 @@ public class Trade {
 		return h;
 	}
 
-
-
 	public static Map getLines(long user_id, long stock_id) {
+		return getLines(user_id, stock_id, false);
+	}
+
+	public static Map getLines(long user_id, long stock_id, boolean isAdvice) {
 		Map h = new HashMap();
 		List<Line> lines = new ArrayList<Line>();
 		List<Trade> trades = new ArrayList<Trade>();
@@ -93,7 +91,7 @@ public class Trade {
 
 				Line prevLine = null;
 
-				double lastStockPrice=0;
+				double lastStockPrice = 0;
 				while (rst.next()) {
 
 					Line line = null;
@@ -107,31 +105,28 @@ public class Trade {
 						line = prevLine;
 
 					} else {
-						line = Line.getNewLine(rst.getObject("date_trade", LocalDate.class), 
-								rst.getDouble("stock_price"),rst.getLong("stock_quantity_traded"), rst.getDouble("cash_added"), prevLine, true);
-	
+						line = Line.getNewLine(rst.getObject("date_trade", LocalDate.class), rst.getDouble("stock_price"), rst.getLong("stock_quantity_traded"), rst.getDouble("cash_added"), prevLine,
+								true);
+
 						prevLine = line;
 					}
 
 					lines.add(line);
 
-	
-					if(line.stockPrice>0) {
-						lastStockPrice=line.stockPrice;
+					if (line.stockPrice > 0) {
+						lastStockPrice = line.stockPrice;
 					}
-					trades.add(new Trade(rst.getLong("trade_id"),user_id, stock_id, line.date, 
-							line.stockPrice,line.sharesBoughtSold,line.stockOwned,
-							line.cash, line.portfolioValue, 
-							line.interest, rst.getString("notes"),line.action));
+					trades.add(new Trade(rst.getLong("trade_id"), user_id, stock_id, line.date, line.stockPrice, line.sharesBoughtSold, line.stockOwned, line.cash, line.portfolioValue, line.interest,
+							rst.getString("notes"), line.action));
 				}
 
 				Line lastLine = prevLine;
 				final double incrementPrice = 0.01f;
-				
-				if(lastLine.stockPrice==0) {
-					lastLine.stockPrice=lastStockPrice;
+
+				if (lastLine.stockPrice == 0) {
+					lastLine.stockPrice = lastStockPrice;
 				}
-				
+
 				Line bp = Line.findBuyLimit(lastLine, incrementPrice);
 				Line sp = Line.findSellLimit(lastLine, incrementPrice);
 
@@ -139,10 +134,14 @@ public class Trade {
 					test(lines, bp, sp);
 				}
 
-				h.put("stock_id", stock_id);
-				h.put("trades", trades);
-				h.put("buyPredict", bp);
-				h.put("sellPredict", sp);
+				if (isAdvice) {
+					h.put("lines", lines);
+				} else {
+					h.put("stock_id", stock_id);
+					h.put("trades", trades);
+					h.put("buyPredict", bp);
+					h.put("sellPredict", sp);
+				}
 
 			}
 
@@ -154,19 +153,23 @@ public class Trade {
 
 		return h;
 	}
-	
+
 	public static Map generateTradeAdvice(long user_id, Trade t) {
-		
+
+		// the portfolio control has a history hence all will have to calculated
+		Map m = getLines(user_id, t.stock_id,true);
+
+		List<Line> lines = (List<Line>) m.get("lines");
+
+		Line lastLine = lines.get(lines.size() - 1);
+
+		Line line = Line.getNewLine(null, t.stock_price, 0, 0, lastLine, false);
+
 		Map h = new HashMap();
-		Line line = new Line();
-
-		line.stockPrice=42;
-		line.action=Action.BUY;
-
 		h.put("advise", line);
-		
+
 		return h;
-		
+
 	}
 
 	public static long updateTradeRecord(long user_id, Trade t) {
@@ -255,10 +258,10 @@ public class Trade {
 		for (int i = 0; i < interest.length; i++) {
 			if (expectedPortfolioValues[i] != lines.get(i).portfolioValue || expectedCash[i] != lines.get(i).cash) {
 				System.out.println("TEST FAILED on record " + i);
-				
-					System.out.println("expectedPortfolioValue= " +expectedPortfolioValues[i] + "  obtained=" + lines.get(i).portfolioValue);
-					System.out.println("expectedCash= " +expectedCash[i] + "  obtained=" + lines.get(i).cash);
-				
+
+				System.out.println("expectedPortfolioValue= " + expectedPortfolioValues[i] + "  obtained=" + lines.get(i).portfolioValue);
+				System.out.println("expectedCash= " + expectedCash[i] + "  obtained=" + lines.get(i).cash);
+
 				testsPassed = false;
 				break;
 			}

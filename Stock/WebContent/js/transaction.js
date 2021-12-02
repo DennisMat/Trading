@@ -91,6 +91,7 @@ function fillTableData(stockSymbol,linesData){
 		
 	var trade = {
 
+			'stock_id':stock_id,
 				'stock_price' :$('#current_stock_price_'+stockSymbol).val()
 
 			};
@@ -104,10 +105,17 @@ function fillTableData(stockSymbol,linesData){
 			data : JSON.stringify(trade), // post data || get data
 			headers: { 'action': 'trade_advice'},
 			success : function(response) {
-
-				var advice="Buy "+ response.advise.sharesBoughtSold  +" shares for " + response.advise.stockPrice 
+				var advice=""; 
+				if(response.advise.sharesBoughtSold>0){
+					advice="Buy "+ response.advise.sharesBoughtSold  +" shares for $" + response.advise.stockPrice ;
+				}
+				if(response.advise.sharesBoughtSold<0){
+					advice="Sell "+ response.advise.sharesBoughtSold  +" shares for $" + response.advise.stockPrice ;
+				}
+				if(response.advise.sharesBoughtSold==0){
+					advice="Do Nothing";
+				}		
 				$("#current_advice_"+stockSymbol).html(advice);
-				
 				
 			},
 			error : function(xhr, resp, text) {
