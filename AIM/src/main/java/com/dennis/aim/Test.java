@@ -31,11 +31,14 @@ public class Test {
 		boolean testsPassed=true;
 		for (int i = 0; i < interest.length; i++) {
 
-			Line l = Line.getNewLine(null, stockPrice[i], 0,interest[i], prevLine);
+			//isTransaction=false for testing. used for predicting and for transaction.
+			Line l = Line.getNewLine(null, stockPrice[i], 0,interest[i], prevLine,false);
 			 l.printValues();
 			// System.out.println();
 			if (expectedPortfolioValues[i] != l.portfolioValue || expectedCash[i] != l.cash) {
 				System.out.println("TEST FAILED on record " + i);
+				System.out.println("expectedPortfolioValue= " +expectedPortfolioValues[i] + "  obtained=" + l.portfolioValue);
+				System.out.println("expectedCash= " +expectedCash[i] + "  obtained=" + l.cash);
 				testsPassed=false;
 				break;
 			}

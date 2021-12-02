@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
+
+
 //import org.apache.commons.io.FileUtils;
 
 import java.lang.reflect.*;
@@ -103,7 +105,7 @@ public class Line {
 	 * 
 	 */
 	public Line(LocalDate date, double stockPrice, long stocksTraded, double interest, long prevStocksOwned, double prevCash, double prevSharesBoughtSold, double prevPortfolioControl,
-			double prevMarketOrder, Action prevAction, double prevInterest) {
+			double prevMarketOrder, Action prevAction, double prevInterest, boolean isTransaction) {
 
 		this.date = date;
 		this.stockPrice = stockPrice;
@@ -119,8 +121,9 @@ public class Line {
 		this.interest = interest;
 
 		portfolioValue = stockValue + cash;
+		sharesBoughtSold=stocksTraded;
 
-		if (stocksTraded == 0) {// if it's transaction then do not do any calculation
+		if (!isTransaction) {// if it's transaction then do not do any calculation
 
 			// if positive sell
 			buyOrSellAdvice = stockValue - prevPortfolioControl;
@@ -160,9 +163,6 @@ public class Line {
 				action = Action.SELL;
 				sharesBoughtSold = -sharesBoughtSold;
 			}
-
-		} else {
-			sharesBoughtSold = stocksTraded;
 
 		}
 
@@ -257,7 +257,7 @@ public class Line {
 
 		Line prevLine = lineInt;
 		for (int i = 0; i < stockPrice.length; i++) {
-			Line l = getNewLine(dates[i], stockPrice[i], 0, interest, prevLine);
+			Line l = getNewLine(dates[i], stockPrice[i], 0, interest, prevLine,false);
 			if (print) {
 				l.printValues();
 			}
@@ -275,14 +275,14 @@ public class Line {
 
 	}
 
-	public static Line getNewLine(LocalDate date, double stockPrice, long stocksTraded, double interest, Line prevLine) {
+	public static Line getNewLine(LocalDate date, double stockPrice, long stocksTraded, double interest, Line prevLine, boolean isTransaction) {
 
-		if (stockPrice < MINIMUM_PRICE) {
+		if (stockPrice>0 && stockPrice < MINIMUM_PRICE) {
 			prevLine.date = date;
 			return prevLine;
 		}
 		return new Line(date, stockPrice, stocksTraded, interest, prevLine.stockOwned, prevLine.cash, prevLine.sharesBoughtSold, prevLine.portfolioControl, prevLine.marketOrder, prevLine.action,
-				prevLine.interest);
+				prevLine.interest, isTransaction);
 	}
 
 	static void predict(Line lastLine, final double incrementPrice) {
@@ -291,12 +291,12 @@ public class Line {
 	}
 
 	static Line findBuyLimit(Line lastLine, final double incrementPrice) {
-		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.BUY, lastLine.interest);
+		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.BUY, 0);
 		return l;
 	}
 
 	static Line findSellLimit(Line lastLine, final double incrementPrice) {
-		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.SELL, lastLine.interest);
+		Line l = findBuySellPrice(incrementPrice, lastLine, lastLine.stockPrice, Action.SELL, 0);
 		return l;
 	}
 
@@ -311,7 +311,7 @@ public class Line {
 				stockPriceForSellBuy -= incrementPrice;
 			}
 
-			l = Line.getNewLine(null, stockPriceForSellBuy, 0, interest, prevLine);
+			l = Line.getNewLine(null, stockPriceForSellBuy, 0, interest, prevLine, false);
 
 			if (l.action == action || loopCount > 1000000000) {
 				System.out.println();
