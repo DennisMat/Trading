@@ -127,6 +127,12 @@ public class ProcessRequestServlet extends HttpServlet {
 					Util.sendResponseToClient(response, gson.toJson(results));
 			}
 			
+			if (action.equals("get_stock")) {
+				Trade t = gson.fromJson(request.getReader(), Trade.class);
+					Map results = Trade.generateTradeAdvice(userId,t);
+					Util.sendResponseToClient(response, gson.toJson(results));
+			}
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();

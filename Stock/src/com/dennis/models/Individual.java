@@ -16,7 +16,7 @@ import com.dennis.util.Util;
 
 public class Individual {
 	
-    public long individual_id;
+    public long user_id;
     
     public String first_name;
     public String last_name;
@@ -27,52 +27,14 @@ public class Individual {
     public String user_name;
     public String password;
     
-	public Individual(long individual_id, String first_name, String last_name, String email, String phone) {
+	public Individual(long user_id, String first_name, String last_name, String email, String phone) {
 		super();
-		this.individual_id = individual_id;
+		this.user_id = user_id;
 		this.first_name = first_name;
 		this.last_name = last_name;
 		this.email = email;
 		this.phone = phone;
 	}
-    
-    
-
-	 
-	public static List<Individual> getFellowEmployees(long  userId) {
-		List l = new ArrayList();
-		Connection conn = DB.getConnection();
-		try {
-			if (conn != null) {
-
-				String properties = "select property_id from property_access_individual where individual_id=?";
-				String employeesOfProperties = "select individual_id from property_access_individual where property_id in("
-						+ properties + ")";
-				String employees = "select * from individual where individual_id in (" + employeesOfProperties + ")";
-				PreparedStatement stmt = conn.prepareStatement(employees);
-				stmt.setLong (1, userId);
-				ResultSet rst = stmt.executeQuery();
-				while (rst.next()) {
-					// System.out.println("row found");
-					Map  h= new HashMap();
-					h.put("individual",new Individual(rst.getLong ("individual_id"), rst.getString("first_name"), rst.getString("last_name"),
-							rst.getString("email"), rst.getString("phone")));
-					l.add(h);
-				}
-
-			}
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			DB.closeConnection(conn);
-		}
-		return l;
-
-	}
-
-
 
 
 	public static boolean verifyUser(String  user_name,String user_password) {
@@ -82,7 +44,7 @@ public class Individual {
 		Connection conn = DB.getConnection();
 		try {
 			if (conn != null) {
-				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM individual where user_name=?");
+				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user_application where user_name=?");
 				stmt.setString (1, user_name);
 				ResultSet rst = stmt.executeQuery();
 				while (rst.next()) {
@@ -104,7 +66,7 @@ public class Individual {
 	public static long insertUpdateUserRecord(long  userId, Individual individual) {
 
 
-		return individual.individual_id;
+		return individual.user_id;
 
 	}
 	

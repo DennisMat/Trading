@@ -1,4 +1,4 @@
-function makeGrid(){
+function listStockTransactions(){
 
 			$.ajax({
 				url : "processrequest",
@@ -27,25 +27,28 @@ function fillStockData(stocksData){
 
 
 function fillTableData(stockSymbol,linesData){
-	removeTable("stocksTable_" + stockSymbol);
+	removeTable("singleStockTable_" + stockSymbol);
 
 	var stock_id = linesData.stock_id;
+
 	
 	$('#stocksDiv').append(
-			'<div id="stock_name_'+stockSymbol+'"></div>'
-			+'<div><table id="stocksTable_'+stockSymbol+'" class="display compact" style="width: 100%"></table></div>'
+			 '<div style="border-style: solid;">'
+			+'<div id="stock_name_'+stockSymbol+'" style="text-align: left;"></div>'
+			+'<div><table id="singleStockTable_'+stockSymbol+'" class="display compact" style="width: 100%"></table></div>'
 			+'<div id="buyAdvice_'+stockSymbol+'"></div>'
 			+'<div id="sellAdvice_'+stockSymbol+'"></div>'
         	+'<div id="div_current_advice_'+stockSymbol+'">Current stock price: <input type="number" id="current_stock_price_'+stockSymbol
         	+'"> <input type="submit" id="current_stock_price_submit_button_'+stockSymbol
         	+'" value="Find"><span id="current_advice_'+stockSymbol+'"></span> </div>'
-        	+ '<div style="background-color:#8ebf42;height: 20px;"></div>'
+       	+ '<div style="height: 120px;"></div>' 
+       	+ '</div>'
 	);
 	
 	$( "#stock_name_"+stockSymbol ).text("Stock Symbol: "+ stockSymbol);
 	
 	
-	var stocksTable=$("#stocksTable_"+stockSymbol).DataTable({
+	var singleStockTable=$("#singleStockTable_"+stockSymbol).DataTable({
 		//"bProcessing" : true,
 		"aaData" : linesData.trades,
 		"aoColumns" : [
@@ -74,14 +77,14 @@ function fillTableData(stockSymbol,linesData){
 	});	
 	
 	
-	$('#stocksTable_'+stockSymbol+' tbody').on('click', '#deleteTrade_'+stockSymbol, function() {
-		var tradeDetails = stocksTable.row($(this).parents('tr')).data();
+	$('#singleStockTable_'+stockSymbol+' tbody').on('click', '#deleteTrade_'+stockSymbol, function() {
+		var tradeDetails = singleStockTable.row($(this).parents('tr')).data();
 		showTradeDeleteDialog(tradeDetails);
 
 	});
 
-	$('#stocksTable_'+stockSymbol+' tbody').on('click', '#editTrade_'+stockSymbol, function() {
-		var tradeDetails = stocksTable.row($(this).parents('tr')).data();
+	$('#singleStockTable_'+stockSymbol+' tbody').on('click', '#editTrade_'+stockSymbol, function() {
+		var tradeDetails = singleStockTable.row($(this).parents('tr')).data();
 		popUpTradeForm(stock_id,tradeDetails);
 	});
 	

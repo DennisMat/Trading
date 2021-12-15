@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+form {border: 3px solid #f1f1f1;}
+
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
+}
+
+
+
+.container {
+  padding: 16px;
+}
+
+span.psw {
+  float: left;
+  padding-top: 16px;
+  padding-left: 16px;
+}
+
+</style>
+
+
+<link rel="stylesheet" type="text/css" 	href="js/jquery-ui-themes-1.12.1/themes/base/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css"	href="js/DataTables/datatables.min.css" />
+<link rel="stylesheet" type="text/css"	href="js/DataTables/DataTables-1.10.21/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="css/style.css?version=1.2" />
+
+<script src="js/jquery-ui-1.12.1/external/jquery/jquery.js"></script>
+<script src="js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+<script	src="js/DataTables/DataTables-1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="js/DataTables/datatables.min.js"></script>
+<script src="js/DataTables/Buttons-1.6.5/js/dataTables.buttons.min.js"></script>
+
+
+
+<script src="js/menu.js"></script>
+<script src="js/common.js"></script>
+<script src="js/user.js"></script>
+<script src="js/property.js"></script>
+<script src="js/apartment.js"></script>
+<script src="js/floorplan.js"></script>
+<script src="js/parking.js"></script>
+<script src="js/reminder.js"></script>
+<script src="js/lease.js"></script>
+
+<script>
+	$(function() {
+
+		loginPage();
+
+	});
+</script>
+
+</head>
+<body>
+
+<div id="login_section">
+
+<h2>Login Form</h2>
+<p style="display:none;color:red;" id="message"></p>
+<form id="login_form" autocomplete="on">
+
+  <div class="container">
+    <label for="uname"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username" id="user_name"  autocomplete="on" required>
+
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" id="user_password"  autocomplete="on" required>
+    
+     <button id="user_login_button" type="submit">Login</button>
+     
+     <div id="div_remember_me_checkbox">
+	    <label>
+	      <input type="checkbox" checked="checked" id="remember_me_checkbox"> Remember me
+	    </label>
+    </div>
+    
+    <div id="div_reenter_password">
+	    <label for="psw"><b>Re-enter Password</b></label>
+	    <input type="password" placeholder="Reenter Password" id="reenter_password" required>
+    </div>
+    
+    <div id="div_email" >
+	    <label><b>Email</b></label>
+	    <input type="text" placeholder="Enter Email incase you forget your password" id="email" >
+    </div>
+    
+    <button id="user_create_button" type="submit">Create account</button>
+    
+    <button id="reset_password_button" type="submit">Reset my password</button>
+        
+   
+  </div>
+
+  <div class="container" style="background-color:#f1f1f1">
+    <!-- <button type="button" class="cancelbtn">Cancel</button> -->
+    <span class="psw"><a href="#" id="regular_login">I already have an account</a></span> 
+    <span class="psw"><a href="#" id="new_account">Create New Account</a></span> 
+    <span class="psw"><a href="#" id="forgot_password">I forgot my password</a></span>
+  </div>
+</form>
+
+</div>
+
+</body>
+</html>

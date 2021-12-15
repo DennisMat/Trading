@@ -34,23 +34,10 @@ function doStuff(){
 		setCookie("logged_in","true",1);
 		
 		createMenu();
-		makeGrid();
-		
-		//$("#login_section").hide();
-		//loginPage();
-		
-		/*
-		$("#mainContentsPlaceHolder").load("include/login.html", function() {
-			$(this).contents().unwrap();	
-			
-				loginPage();
-			
-	
-		});
-		
-		*/
+		listStockTransactions();
+
 	}else{
-		//window.location.href = 'login.html';
+		window.location.href = 'login.html';
 		
 	}
 	
