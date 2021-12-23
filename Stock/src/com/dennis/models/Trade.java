@@ -51,7 +51,7 @@ public class Trade {
 
 		try {
 			if (conn != null) {
-				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? ");
+				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE user_id= ? AND active=true");
 				//PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stock WHERE stock_id in(1) AND user_id= ? ");
 				stmt.setLong(1, user_id);
 				ResultSet rst = stmt.executeQuery();
@@ -123,12 +123,16 @@ public class Trade {
 				Line lastLine = prevLine;
 				final double incrementPrice = 0.01f;
 
-				if (lastLine.stockPrice == 0) {
+				Line bp =null;
+				Line sp =null;
+				if (lastLine!=null && lastLine.stockPrice == 0) {
 					lastLine.stockPrice = lastStockPrice;
 				}
-
-				Line bp = Line.findBuyLimit(lastLine, incrementPrice);
-				Line sp = Line.findSellLimit(lastLine, incrementPrice);
+				
+				if (lastLine!=null) {
+					bp = Line.findBuyLimit(lastLine, incrementPrice);
+					sp = Line.findSellLimit(lastLine, incrementPrice);
+				}
 
 				if (user_id == 1 && stock_id == 0) {
 					test(lines, bp, sp);

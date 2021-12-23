@@ -1,5 +1,6 @@
 function listStockTransactions(){
 
+	
 			$.ajax({
 				url : "processrequest",
 				type : "POST", 
@@ -18,7 +19,12 @@ function listStockTransactions(){
 
 
 function fillStockData(stocksData){
-	$('#stocksDiv').html("");
+	
+	$('#stockListDiv').html("");
+	$("#mainContentsPlaceHolder").html(
+			'<div class="sectionStyle">Stock transactions<div>');
+
+	
 	  for (var stockSymbol in stocksData) {
           var linesData = stocksData[stockSymbol];
           fillTableData(stockSymbol,linesData);

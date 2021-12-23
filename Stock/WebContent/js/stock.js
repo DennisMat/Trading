@@ -19,24 +19,28 @@ function listStocks() {
 }
 
 function populateStockTable(stocks) {
-	destroyTables();
 	removeTable("stocksTable");
+	$('#stocksDiv').html("");
 	$("#mainContentsPlaceHolder").html(
-			'<div class="sectionStyle">List of stocks</div><div id="stocksDiv"><table id="stocksTable" class="display compact" style="width: 100%"></table><div>');
+			'<div class="sectionStyle">List of stocks</div><div id="stockListDiv"><table id="stocksTable" class="display compact" style="width: 100%"></table><div>');
 
 	stocksTable = $('#stocksTable').DataTable({
 		"aaData" : stocks,
         "createdRow": function( row, data, dataIndex){
-        	if (data.stock.active == false) {
+        	if (data.active == false) {
                 $(row).addClass('dimmedText');
             }
         },
 		"columns" : [ {
 			"title" : "Stock Symbol",
-			"data" : "stock.stock_name"
-		}, {
+			"data" : "stock_symbol"
+		}, 
+
+		
+		{
+			//invisible column but is needed for filtering, this is columns(1)
 			"title" : "Active",
-			"data" : "stock.active",
+			"data" : "active",
 			"visible" : false,
 			"defaultContent" : ""
 		}, {
@@ -44,7 +48,7 @@ function populateStockTable(stocks) {
 			"defaultContent" : null,
 			render : function(data, type, row) {
 				var buttonText = "Inactivate";
-				if (row.stock.active == false) {
+				if (row.active == false) {
 					buttonText = "Activate";
 				}
 				return '<button id="inactivateStock">' + buttonText + '</button>';
@@ -53,9 +57,9 @@ function populateStockTable(stocks) {
 
 		}, {
 			"defaultContent" : '<button id="editStock">Edit</button>'
-		}, {
-			"defaultContent" : '<button id="detailsStock">Details</button>'
-		} ],
+		}
+		
+		 ],
 
 		dom : 'Bfrtip',
 		buttons : [ {
@@ -78,7 +82,7 @@ function populateStockTable(stocks) {
 				} else {
 
 					this.columns().every(function() {
-						this.columns(3).search(true);//show only active records
+						this.columns(1).search(true);//show only active records
 					});
 					this.buttons(1).text("Show All");
 				}
@@ -87,9 +91,9 @@ function populateStockTable(stocks) {
 			}
 		} ]
 
-	});
+	}); 
 
-	stocksTable.columns(3).search(true).draw();// filter the inactive records
+	stocksTable.columns(1).search(true).draw();// filter the inactive records
 													
 
 	$('#stocksTable tbody').on('click', '#inactivateStock', function() {
@@ -103,25 +107,10 @@ function populateStockTable(stocks) {
 		popUpStockForm(stockDetails);
 	});
 
-	$('#stocksTable tbody').on('click', '#detailsStock', function() {
-		var stockDetails = stocksTable.row($(this).parents('tr')).data();
-		displayStockDetails(stockDetails);
-	});
 
 }
 
-function displayStockDetails(stockDetails) {
 
-	destroyTables();
-	$("#mainContentsPlaceHolder").load("include/stockDetails.html?" + Math.random(), function() {
-		$(this).contents().unwrap();
-		$("#stock_name").html(stockDetails.stock.stock_name);
-		listApartments("apartmentListDiv", stockDetails);
-		listFloorPlans(stockDetails.stock.stock_id);
-		listParkingSpots("parkingContentsPlaceHolder", stockDetails.stock.stock_id, null);
-	});
-
-}
 
 function popUpStockForm(stockDetails) {
 
@@ -133,42 +122,23 @@ function popUpStockForm(stockDetails) {
 		$("#stock_name").tooltip();
 
 		if (stockDetails != null) {
-			$("#stock_id").attr("value", stockDetails.stock.stock_id);
-			$("#address_id").attr("value", stockDetails.address.address_id);
-
-			$("#stock_name").attr("value", stockDetails.stock.stock_name);
-			$("#address_line1").attr("value", stockDetails.address.address_line1);
-			$("#address_line2").attr("value", stockDetails.address.address_line2);
-			$("#city").attr("value", stockDetails.address.city);
-			$("#state_province").attr("value", stockDetails.address.state_province);
-			$("#postal_code").attr("value", stockDetails.address.postal_code);
-			$('#notes').val(stockDetails.stock.notes);
+			$("#stock_id").attr("value", stockDetails.stock_id);
+			$("#stock_symbol").attr("value", stockDetails.stock_symbol);
+			$("#stock_description").attr("value", stockDetails.stock_description);
 
 		}
 
 		$("#stock_submit_button").on('click', function(e) {
 			e.preventDefault();
-			var formData = {};
 			var stock = {
-				'stock_name' : $('input[id=stock_name]').val(),
-				'notes' : $('#notes').val()
+				'stock_symbol' : $('input[id=stock_symbol]').val(),
+				'stock_description' : $('#stock_description').val()
 			}
-			var address = {
-				'address_line1' : $('input[id=address_line1]').val(),
-				'address_line2' : $('input[id=address_line2]').val(),
-				'city' : $('input[id=city]').val(),
-				'state_province' : $('input[id=state_province]').val(),
-				'postal_code' : $('input[id=postal_code]').val()
+			
+			if($('input[id=stock_id]').val().length>0){
+				stock.stock_id=$('input[id=stock_id]').val();
 			}
-
-			if (stockDetails != null) {
-				stock.stock_id = $('input[id=stock_id]').val();
-				stock.address_id = $('input[id=address_id]').val();
-				address.address_id = $('input[id=address_id]').val();
-			}
-
-			formData.address = address;
-			formData.stock = stock;
+			
 
 			// send ajax
 			$("body").css("cursor", "progress");
@@ -177,7 +147,7 @@ function popUpStockForm(stockDetails) {
 				type : "POST", // type of action POST || GET
 				contentType : "application/json; charset=utf-8",
 				dataType : 'json', // data type
-				data : JSON.stringify(formData),
+				data : JSON.stringify(stock),
 				headers : {
 					"action" : "post_stock"
 				},
@@ -208,15 +178,15 @@ function popUpStockForm(stockDetails) {
 
 function showStockChangeStatusDialog(stockDetails) {
 	
-	var isActive=stockDetails.stock.active;
+	var isActive=stockDetails.active;
 	
 	var message="Are you sure that you want to inactivate this stock?";
 		
 	if(isActive==false){
 		message="Are you sure that you want to activate this stock?";
-		stockDetails.stock.active=true;
+		stockDetails.active=true;
 	}else{
-		stockDetails.stock.active=false;
+		stockDetails.active=false;
 	}
 
 	$("#dialog").remove()
@@ -246,7 +216,7 @@ function showStockChangeStatusDialog(stockDetails) {
 						$("body").css("cursor", "default");
 
 						$('#dialog').dialog('close');
-						listProperties();
+						listStocks();
 
 					},
 					error : function(xhr, resp, text) {

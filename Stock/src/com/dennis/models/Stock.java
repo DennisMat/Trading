@@ -71,7 +71,7 @@ public class Stock {
 		Connection conn = DB.getConnection();
 		try {
 			if (conn != null) {
-				PreparedStatement stmt = conn.prepareStatement("select * from stock_ where user_id=?");
+				PreparedStatement stmt = conn.prepareStatement("select * from stock where user_id=?");
 				stmt.setLong (1, user_id);
 				ResultSet rst = stmt.executeQuery();
 
@@ -91,9 +91,9 @@ public class Stock {
 	}
 
 
-	public static long  changeActiveStatus(long user_id, Stock p) {
+	public static long  changeActiveStatus(long user_id, Stock s) {
 
-		if(p.stock_id!=0 && !hasStockInformationAccess(user_id,p.stock_id)) {
+		if(s.stock_id!=0 && !hasStockInformationAccess(user_id,s.stock_id)) {
 			return 0;
 		}
 
@@ -106,8 +106,8 @@ public class Stock {
 
 		if (conn != null) {
 			PreparedStatement stmt = conn.prepareStatement(update);
-			stmt.setBoolean(1, p.active);
-			stmt.setLong(2, p.stock_id);
+			stmt.setBoolean(1, s.active);
+			stmt.setLong(2, s.stock_id);
 			ResultSet rst = stmt.executeQuery();
 			
 			if (rst.next()) {
@@ -132,8 +132,8 @@ public class Stock {
 		}
 
 		long  stockId = 0;
-		String insert = "INSERT into stock (stock_symbol,address_id,stock_description) values(?,?,?)  RETURNING  stock_id";
-		String update = "UPDATE  stock set stock_symbol=?,stock_description=? WHERE stock_id=?   RETURNING  stock_id";
+		String insert = "INSERT into stock (stock_symbol, stock_description, active, user_id ) values(?,?,true, ?)  RETURNING  stock_id";
+		String update = "UPDATE  stock set stock_symbol=?, stock_description=? WHERE stock_id=?   RETURNING  stock_id";
 
 		String stm = null;
 		if (p.stock_id == 0) {
@@ -150,10 +150,13 @@ public class Stock {
 
 			if (conn != null) {
 				PreparedStatement stmt = conn.prepareStatement(stm);
+				
 				stmt.setString(1, p.stock_symbol);
 				stmt.setString(2, p.stock_description);
 				if (stockId > 0) {
 					stmt.setLong (3, stockId);
+				}else {
+					stmt.setLong(3, user_id);
 				}
 
 				ResultSet rst = stmt.executeQuery();

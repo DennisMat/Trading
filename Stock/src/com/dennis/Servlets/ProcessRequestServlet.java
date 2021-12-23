@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.dennis.models.Individual;
+import com.dennis.models.Stock;
 import com.dennis.models.Trade;
 import com.dennis.util.Util;
 import com.google.gson.Gson;
@@ -120,20 +121,35 @@ public class ProcessRequestServlet extends HttpServlet {
 					Util.sendResponseToClient(response, gson.toJson(results));
 				}
 			}
-			
+
 			if (action.equals("trade_advice")) {
 				Trade t = gson.fromJson(request.getReader(), Trade.class);
-					Map results = Trade.generateTradeAdvice(userId,t);
-					Util.sendResponseToClient(response, gson.toJson(results));
+				Map results = Trade.generateTradeAdvice(userId, t);
+				Util.sendResponseToClient(response, gson.toJson(results));
 			}
-			
+
 			if (action.equals("get_stock")) {
-				Trade t = gson.fromJson(request.getReader(), Trade.class);
-					Map results = Trade.generateTradeAdvice(userId,t);
+				List results = Stock.getStocks(userId);
+				Util.sendResponseToClient(response, gson.toJson(results));
+			}
+
+			if (action.equals("post_stock")) {
+				Stock s = gson.fromJson(request.getReader(), Stock.class);
+				if (Stock.insertUpdateStockRecord(userId,s) > 0) {
+					List results = Stock.getStocks(userId);
 					Util.sendResponseToClient(response, gson.toJson(results));
+				}
+				
 			}
 			
 			
+			if (action.equals("change_stock_status")) {
+				Stock s = gson.fromJson(request.getReader(), Stock.class);
+				if (Stock.changeActiveStatus(Util.getUserInSession(request), s) > 0) {
+					Util.sendResponseToClient(response, "{\"change_status_status\":\" success\"}");
+				}
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

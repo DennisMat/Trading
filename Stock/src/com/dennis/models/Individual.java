@@ -50,6 +50,7 @@ public class Individual {
 				while (rst.next()) {
 					String saltAndHash=rst.getString("password");
 					isPasswordCorrect=Auth.verifyPassword(user_password,saltAndHash);
+
 				}
 			}
 
