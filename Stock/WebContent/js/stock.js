@@ -20,7 +20,7 @@ function listStocks() {
 
 function populateStockTable(stocks) {
 	removeTable("stocksTable");
-	$('#stocksDiv').html("");
+	$('#stocksTransactionsDiv').html("");
 	$("#mainContentsPlaceHolder").html(
 			'<div class="sectionStyle">List of stocks</div><div id="stockListDiv"><table id="stocksTable" class="display compact" style="width: 100%"></table><div>');
 

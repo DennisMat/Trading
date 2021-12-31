@@ -21,6 +21,7 @@ function listStockTransactions(){
 function fillStockData(stocksData){
 	
 	$('#stockListDiv').html("");
+	$('#stocksTransactionsDiv').html("");
 	$("#mainContentsPlaceHolder").html(
 			'<div class="sectionStyle">Stock transactions<div>');
 
@@ -38,9 +39,9 @@ function fillTableData(stockSymbol,linesData){
 	var stock_id = linesData.stock_id;
 
 	
-	$('#stocksDiv').append(
+	$('#stocksTransactionsDiv').append(
 			 '<div style="border-style: solid;">'
-			+'<div id="stock_name_'+stockSymbol+'" style="text-align: left;"></div>'
+			+'<div id="stock_name_'+stockSymbol+'" style="text-align: left;">Stock Symbol: '+ stockSymbol+'</div>'
 			+'<div><table id="singleStockTable_'+stockSymbol+'" class="display compact" style="width: 100%"></table></div>'
 			+'<div id="buyAdvice_'+stockSymbol+'"></div>'
 			+'<div id="sellAdvice_'+stockSymbol+'"></div>'
@@ -50,9 +51,7 @@ function fillTableData(stockSymbol,linesData){
        	+ '<div style="height: 120px;"></div>' 
        	+ '</div>'
 	);
-	
-	$( "#stock_name_"+stockSymbol ).text("Stock Symbol: "+ stockSymbol);
-	
+
 	
 	var singleStockTable=$("#singleStockTable_"+stockSymbol).DataTable({
 		//"bProcessing" : true,
