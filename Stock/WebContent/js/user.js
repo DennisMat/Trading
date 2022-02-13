@@ -378,11 +378,6 @@ function loginPage() {
 				if (response.logged_in == true) {
 					setCookie("logged_in", "true", 1);
 					window.location.href = "index.html";
-					/*
-					 * setCookie("logged_in","true",1);
-					 * 
-					 * createMenu(); listProperties();
-					 */
 				} else {
 					$("#message").show();
 					$("#message").html("your username or password is incorrect.");
@@ -399,6 +394,15 @@ function loginPage() {
 
 	$("#user_create_button").on('click', function(e) {
 		e.preventDefault();
+		if($('input[id=user_password]').val().trim()==""){
+			$("#message").html("Passwords has no value");
+			return false;
+		}
+		
+		if($('input[id=user_password]').val().trim()!=$('input[id=reenter_password]').val().trim()){
+			$("#message").html("Passwords do not match");
+			return false;
+		}
 
 		$.ajax({
 			url : "processrequest",
@@ -411,7 +415,16 @@ function loginPage() {
 				"user_password" : $('input[id=user_password]').val()
 			},
 			success : function(response) {
-				listProperties();
+				if (response.user_created == true) {
+					setCookie("logged_in", "true", 1);
+					window.location.href = "index.html";
+				} else {
+					$("#message").show();
+					$("#message").html("User not created");
+					if (response.user_created == "user_name_exists"){
+						$("#message").html("User not created, because this Username already exist, please choose another Username");
+					}
+				}
 			},
 			error : function(xhr, resp, text) {
 				console.log(xhr, resp, text);

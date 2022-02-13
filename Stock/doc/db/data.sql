@@ -4,7 +4,6 @@ DROP TABLE IF EXISTS public.user_application;
 
 
 
---users of the website who may be office staff or occupants
 CREATE TABLE public.user_application
 (
     user_id SERIAL PRIMARY KEY,
@@ -12,7 +11,7 @@ CREATE TABLE public.user_application
     last_name character varying(50),
     email character varying(100),
 	phone character varying(100),
-	user_name character varying(100)  NOT NULL,
+	user_name character varying(100)  NOT NULL UNIQUE,
 	password character varying(1000),
 	notes text
   
@@ -56,7 +55,7 @@ INSERT INTO public.user_application VALUES (35, 'dasf', 'das', 'df', NULL, 'dsaf
 INSERT INTO public.user_application VALUES (36, 'jumbo', 'jumbo', 'sad', NULL, 'mumbo', NULL,NULL);
 
 
-SELECT setval(pg_get_serial_sequence('public.user', 'user_id'), (SELECT MAX(user_id) FROM public.user_application)+1);
+SELECT setval(pg_get_serial_sequence('public.user_application', 'user_id'), (SELECT MAX(user_id) FROM public.user_application)+1);
 
 
 CREATE TABLE public.stock

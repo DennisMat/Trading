@@ -78,9 +78,7 @@ public class Trade {
 		List<Trade> trades = new ArrayList<Trade>();
 
 		Connection conn = DB.getConnection();
-		if (!Individual.hasAccess(user_id, stock_id)) {
-			return null;// no rights
-		}
+	
 		try {
 			if (conn != null) {
 

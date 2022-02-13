@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.dennis.models.Individual;
+import com.dennis.models.User;
 import com.dennis.models.Stock;
 import com.dennis.models.Trade;
 import com.dennis.util.Util;
@@ -41,6 +41,7 @@ public class ProcessRequestServlet extends HttpServlet {
 		public LocalDate deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			return LocalDate.parse(json.getAsJsonPrimitive().getAsString());
 		}
+
 	}).create();
 
 	public ProcessRequestServlet() {
@@ -49,6 +50,7 @@ public class ProcessRequestServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		Util.sendResponseToClient(response, "A gaggle of morons!");
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -65,13 +67,13 @@ public class ProcessRequestServlet extends HttpServlet {
 
 	void authMethods(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers, String action) {
 
-		String user_name = headers.get("user_name");
-		String user_password = headers.get("user_password");
+		String user_name = headers.get("user_name").trim();
+		String user_password = headers.get("user_password").trim();
 
 		try {
 			if (action.equals("login")) {
 
-				boolean isloggedIn = Individual.verifyUser(user_name, user_password);
+				boolean isloggedIn = User.verifyUser(user_name, user_password);
 
 				Util.sendResponseToClient(response, "{\"logged_in\":" + isloggedIn + "}");
 
@@ -87,11 +89,15 @@ public class ProcessRequestServlet extends HttpServlet {
 
 			} else if (action.equals("createUser")) {
 
-				Individual ind = new Individual(0, "", "", "", "");
-				ind.user_name = user_name;
-				ind.password = user_password;
+				User ind = new User(0, user_name, "", "", "", "", user_password, "");
 
-				Individual.insertUpdateUserRecord(0, ind);
+				if (User.checkExistingUserName(ind)) {
+					Util.sendResponseToClient(response, "{\"user_created\":\"user_name_exists\"}");
+				} else if (User.insertUpdateUserRecord(ind) > 0) {
+					Util.sendResponseToClient(response, "{\"user_created\":true}");
+				} else {
+					Util.sendResponseToClient(response, "{\"user_created\":false}");
+				}
 
 			}
 
@@ -135,14 +141,13 @@ public class ProcessRequestServlet extends HttpServlet {
 
 			if (action.equals("post_stock")) {
 				Stock s = gson.fromJson(request.getReader(), Stock.class);
-				if (Stock.insertUpdateStockRecord(userId,s) > 0) {
+				if (Stock.insertUpdateStockRecord(userId, s) > 0) {
 					List results = Stock.getStocks(userId);
 					Util.sendResponseToClient(response, gson.toJson(results));
 				}
-				
+
 			}
-			
-			
+
 			if (action.equals("change_stock_status")) {
 				Stock s = gson.fromJson(request.getReader(), Stock.class);
 				if (Stock.changeActiveStatus(Util.getUserInSession(request), s) > 0) {

@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.dennis.db.DB;
-import com.dennis.models.Individual;
+import com.dennis.models.User;
 
 public class Util {
 
