@@ -341,6 +341,7 @@ function signOutLink() {
 
 			},
 			error : function(xhr, resp, text) {
+				setCookie("logged_in", "false", 1);//signout regardless of the response
 				console.log(xhr, resp, text);
 			}
 		});

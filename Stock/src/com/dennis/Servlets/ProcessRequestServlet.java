@@ -67,19 +67,26 @@ public class ProcessRequestServlet extends HttpServlet {
 
 	void authMethods(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers, String action) {
 
-		String user_name = headers.get("user_name").trim();
-		String user_password = headers.get("user_password").trim();
+		String user_name = "";
+		String user_password = "";
+		
+		if(headers.get("user_name")!=null) {
+			user_name=headers.get("user_name").trim();
+			user_password=headers.get("user_password").trim();
+		}
 
 		try {
 			if (action.equals("login")) {
 
 				boolean isloggedIn = User.verifyUser(user_name, user_password);
-
-				Util.sendResponseToClient(response, "{\"logged_in\":" + isloggedIn + "}");
-
+				
 				HttpSession session = request.getSession();
 
 				session.setAttribute("user_name", user_name);
+
+				Util.sendResponseToClient(response, "{\"logged_in\":" + isloggedIn + "}");
+
+				
 
 			} else if (action.equals("logout")) {
 

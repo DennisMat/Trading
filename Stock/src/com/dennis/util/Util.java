@@ -39,9 +39,8 @@ public class Util {
 	}
 
 	public static long getUserInSession(HttpServletRequest request) {
-		// HttpSession session = request.getSession();
-		// long userId = long .parselong ((String) session.getAttribute("userId"));
-		long userId = 1;
+		 HttpSession session = request.getSession();
+		 long userId = Long.parseLong ((String) session.getAttribute("userId"));
 		return userId;
 	}
 
