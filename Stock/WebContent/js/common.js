@@ -10,31 +10,28 @@ function doStuff(){
 
 
 	$('#mainContents').html('<div id="mainContentsPlaceHolder" style="float: left;min-width: 80%"></div>');
-	//alert("doc ready");
+	// alert("doc ready");
 	$("#header").load("include/header.html", function() {
 		$(this).contents().unwrap();
 
 		/*
-		$("#target").click(function() {
-			alert("Handler for .click() called.");
-		});
-		*/
+		 * $("#target").click(function() { alert("Handler for .click()
+		 * called."); });
+		 */
 		
-		signOutLink();
+		setUserMessages();
 
 
 	});
 	
-	if(getCookie("logged_in")=="true"){//cookies store only strings so it's not boolean
-		createMenu();
-	}
 	
-	if(getCookie("logged_in")=="true"){
-		
+	if(getCookie("logged_in")=="true"){// cookies store only strings so it's not boolean
+		createMenu();
 		setCookie("logged_in","true",1);
 		
 		createMenu();
 		listStockTransactions();
+		
 
 	}else{
 		window.location.href = 'login.html';
@@ -57,16 +54,17 @@ function removeTable(someTable) {
 	$( "#"+someTable+"_wrapper").remove();
 	// this is done because the destroy removes the parent div of a table, which
 	// is an odd behavior.
-	//$('#mainContents').html('<div id="mainContentsPlaceHolder" style="float: left;min-width: 80%"></div>');
+	// $('#mainContents').html('<div id="mainContentsPlaceHolder" style="float:
+	// left;min-width: 80%"></div>');
 }
 
 
 
 function destroyTable(someTable) {
-//	if (typeof someTable !== 'undefined' || someTable != null) {
+// if (typeof someTable !== 'undefined' || someTable != null) {
 //
-//		someTable.destroy(true);
-//	}
+// someTable.destroy(true);
+// }
 	try {
 		someTable.destroy(true);
 		someTable = null;

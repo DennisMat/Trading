@@ -44,9 +44,9 @@ public class User {
 		this.notes = notes;
 	}
 
-	public static boolean verifyUser(String  user_name,String user_password) {
+	public static long getUser(String  user_name,String user_password) {
 		
-		boolean isPasswordCorrect=false;
+		long user_id=0;
 		
 		Connection conn = DB.getConnection();
 		try {
@@ -56,7 +56,10 @@ public class User {
 				ResultSet rst = stmt.executeQuery();
 				while (rst.next()) {
 					String saltAndHash=rst.getString("password");
-					isPasswordCorrect=Auth.verifyPassword(user_password,saltAndHash);
+					boolean isPasswordCorrect=Auth.verifyPassword(user_password,saltAndHash);
+					if(isPasswordCorrect) {
+						user_id=rst.getLong("user_id");
+					}
 
 				}
 			}
@@ -68,7 +71,7 @@ public class User {
 			DB.closeConnection(conn);
 		}
 		
-		return isPasswordCorrect;
+		return user_id;
 	}
 
 	public static boolean checkExistingUserName(User user) {

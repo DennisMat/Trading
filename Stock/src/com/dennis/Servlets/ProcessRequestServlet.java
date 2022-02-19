@@ -69,30 +69,29 @@ public class ProcessRequestServlet extends HttpServlet {
 
 		String user_name = "";
 		String user_password = "";
-		
-		if(headers.get("user_name")!=null) {
-			user_name=headers.get("user_name").trim();
-			user_password=headers.get("user_password").trim();
+		HttpSession session = request.getSession();
+
+		if (headers.get("user_name") != null) {
+			user_name = headers.get("user_name").trim();
+			user_password = headers.get("user_password").trim();
 		}
 
 		try {
 			if (action.equals("login")) {
 
-				boolean isloggedIn = User.verifyUser(user_name, user_password);
-				
-				HttpSession session = request.getSession();
+				long user_id = User.getUser(user_name, user_password);
 
-				session.setAttribute("user_name", user_name);
-
-				Util.sendResponseToClient(response, "{\"logged_in\":" + isloggedIn + "}");
-
-				
+				if (user_id > 0) {
+					session.setAttribute("user_id", user_id);
+					Util.sendResponseToClient(response, "{\"logged_in\":true}");
+				}else {
+					Util.sendResponseToClient(response, "{\"logged_in\":false}");
+				}
 
 			} else if (action.equals("logout")) {
 
-				HttpSession session = request.getSession();
-				session.invalidate();
 				Util.sendResponseToClient(response, "{\"logged_out\":true}");
+				session.removeAttribute("user_id");
 
 			} else if (action.equals("createUser")) {
 
@@ -117,7 +116,7 @@ public class ProcessRequestServlet extends HttpServlet {
 		long userId = Util.getUserInSession(request);
 		try {
 			if (action.equals("get_stock_data")) {
-				Map results = Trade.getLines(1);
+				Map results = Trade.getLines(userId);
 				Util.sendResponseToClient(response, gson.toJson(results));
 			}
 			if (action.equals("insert_trade")) {

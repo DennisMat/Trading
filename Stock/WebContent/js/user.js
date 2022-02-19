@@ -321,7 +321,8 @@ function populateHistoryTable(history) {
 
 }
 
-function signOutLink() {
+function setUserMessages() {
+	$("#user_name_message").text("You are logged in as " + getCookie("user_name"));
 	$("#sign_out").on('click', function(e) {
 		e.preventDefault();
 
@@ -336,12 +337,14 @@ function signOutLink() {
 			success : function(response) {
 				if (response.logged_out == true) {
 					setCookie("logged_in", "false", 1);
+					$("#user_name_message").text("");
 					window.location.href = "";
 				}
 
 			},
 			error : function(xhr, resp, text) {
 				setCookie("logged_in", "false", 1);//signout regardless of the response
+				$("#user_name_message").text("");
 				console.log(xhr, resp, text);
 			}
 		});
@@ -378,6 +381,7 @@ function loginPage() {
 			success : function(response) {
 				if (response.logged_in == true) {
 					setCookie("logged_in", "true", 1);
+					setCookie("user_name",  $('input[id=user_name]').val(), 10);
 					window.location.href = "index.html";
 				} else {
 					$("#message").show();
@@ -418,6 +422,7 @@ function loginPage() {
 			success : function(response) {
 				if (response.user_created == true) {
 					setCookie("logged_in", "true", 1);
+					setCookie("user_name",  $('input[id=user_name]').val(), 10);
 					window.location.href = "index.html";
 				} else {
 					$("#message").show();
