@@ -14,7 +14,10 @@ function createMenu(){
 					
 					if(menuSelected=='stock_list_menu'){
 						listStocks();
-					}				
+					}	
+					if(menuSelected=='settings_menu'){
+						settings();
+					}	
 
 	
 				}

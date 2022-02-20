@@ -435,7 +435,7 @@ function loginPage() {
 			error : function(xhr, resp, text) {
 				console.log(xhr, resp, text);
 			}
-		})
+		});
 
 		return false;// because e.preventDefault(); may not work
 	});
@@ -492,3 +492,67 @@ function loginPage() {
 	});
 
 }
+
+function settings() {
+	
+	$('#stocksTransactionsDiv').html("");
+	$('#mainContentsPlaceHolder').html("");
+
+$("#mainContentsPlaceHolder").load("include/change_password.html?" + Math.random(), function() {
+	
+	
+	$("#password_submit_button").on('click', function(e) {
+		e.preventDefault();
+		
+
+		if($('input[id=user_password]').val().trim()==""){
+			
+			$("#message").html("Password has no value");
+			return false;
+		}
+		
+		if($('input[id=user_password_new]').val().trim()==""){
+			
+			$("#message").html("New password has no value");
+			return false;
+		}
+		
+		if($('input[id=user_password_new]').val().trim()!=$('input[id=user_password_new_repeat]').val().trim()){
+			$("#message").html("Passwords do not match");
+			return false;
+		}
+
+			$.ajax({
+				url : "processrequest",
+				type : "POST",
+				contentType : "application/json; charset=utf-8",
+				dataType : 'json',
+				headers : {
+					"action" : "change_password",
+					"user_password" : $('input[id=user_password]').val(),
+					"user_password_new" : $('input[id=user_password_new]').val()
+				},
+				success : function(response) {
+					if (response.password_changed == true) {
+						$("#message").show();
+						$("#message").html("Your password was changed, you can navigate to another page.");
+					} else {
+						$("#message").show();
+						$("#message").html("Your password was NOT changed.<br>Make sure that the current password you put is correct.");
+					}
+				},
+				error : function(xhr, resp, text) {
+					console.log(xhr, resp, text);
+				}
+			});
+
+		return false;// because e.preventDefault(); may not work
+	});
+	
+
+
+	
+	
+});
+
+}//end of settings

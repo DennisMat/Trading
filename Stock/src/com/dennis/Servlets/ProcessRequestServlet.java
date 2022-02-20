@@ -105,6 +105,25 @@ public class ProcessRequestServlet extends HttpServlet {
 					Util.sendResponseToClient(response, "{\"user_created\":false}");
 				}
 
+			} else if (action.equals("change_password")) {
+				
+				long user_id = User.getUserInSession(request);
+
+				if (user_id > 0) {
+					user_password = headers.get("user_password").trim();
+					String user_password_new = headers.get("user_password_new").trim();
+					
+					if(User.changePassword(user_id, user_password, user_password_new)>0) {
+						Util.sendResponseToClient(response, "{\"password_changed\":true}");
+					}else {
+						Util.sendResponseToClient(response, "{\"password_changed\":false}");
+					}
+					
+				}else {
+					Util.sendResponseToClient(response, "{\"password_changed\":false}");
+				}
+				
+				
 			}
 
 		} catch (Exception e) {
@@ -113,7 +132,7 @@ public class ProcessRequestServlet extends HttpServlet {
 	}
 
 	void transactionMethods(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers, String action) {
-		long userId = Util.getUserInSession(request);
+		long userId = User.getUserInSession(request);
 		try {
 			if (action.equals("get_stock_data")) {
 				Map results = Trade.getLines(userId);
@@ -156,7 +175,7 @@ public class ProcessRequestServlet extends HttpServlet {
 
 			if (action.equals("change_stock_status")) {
 				Stock s = gson.fromJson(request.getReader(), Stock.class);
-				if (Stock.changeActiveStatus(Util.getUserInSession(request), s) > 0) {
+				if (Stock.changeActiveStatus(User.getUserInSession(request), s) > 0) {
 					Util.sendResponseToClient(response, "{\"change_status_status\":\" success\"}");
 				}
 			}

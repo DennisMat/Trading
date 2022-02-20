@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import com.dennis.Auth.Auth;
 import com.dennis.db.DB;
 import com.dennis.util.Util;
@@ -44,6 +47,16 @@ public class User {
 		this.notes = notes;
 	}
 
+	public static long getUserInSession(HttpServletRequest request) {
+		long userId =0;
+		 HttpSession session = request.getSession();
+		 if(session.getAttribute("user_id")!=null) {
+			 userId = ((Long) session.getAttribute("user_id")).longValue();
+		 }
+		return userId;
+	}
+	
+	
 	public static long getUser(String  user_name,String user_password) {
 		
 		long user_id=0;
@@ -151,6 +164,50 @@ public class User {
 
 	
 
+	}
+	
+
+	
+	public static long changePassword(long  user_id,String user_password,String user_password_new) {
+		
+		long user_id_ret=0;
+		
+		Connection conn = DB.getConnection();
+		try {
+			if (conn != null) {
+				
+				
+				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user_application where user_id=?");
+				stmt.setLong (1, user_id);
+				ResultSet rst = stmt.executeQuery();
+				while (rst.next()) {
+					String saltAndHash=rst.getString("password");
+					boolean isPasswordCorrect=Auth.verifyPassword(user_password,saltAndHash);
+					if(isPasswordCorrect) {
+						String user_password_new_hashed =Auth.generateSaltAndHashPassword(user_password_new);
+						PreparedStatement stmt1 = conn.prepareStatement("UPDATE user_application set password=? where user_id=? RETURNING  user_id");
+						stmt1.setString (1, user_password_new_hashed);
+						stmt1.setLong (2, user_id);
+						ResultSet rst1 = stmt1.executeQuery();
+						while (rst1.next()) {
+							user_id_ret=rst1.getLong("user_id");
+
+						}
+					}
+
+				}
+
+				
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DB.closeConnection(conn);
+		}
+		
+		return user_id_ret;
 	}
 	
 

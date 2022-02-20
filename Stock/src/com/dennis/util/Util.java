@@ -38,14 +38,7 @@ public class Util {
 		}
 	}
 
-	public static long getUserInSession(HttpServletRequest request) {
-		long userId =0;
-		 HttpSession session = request.getSession();
-		 if(session.getAttribute("user_id")!=null) {
-			 userId = ((Long) session.getAttribute("user_id")).longValue();
-		 }
-		return userId;
-	}
+
 
 	public static boolean stringIsNullOrEmpty(String str) {
 		if (str == null) {
