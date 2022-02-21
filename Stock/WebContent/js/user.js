@@ -400,11 +400,13 @@ function loginPage() {
 	$("#user_create_button").on('click', function(e) {
 		e.preventDefault();
 		if($('input[id=user_password]').val().trim()==""){
+			$("#message").show();
 			$("#message").html("Passwords has no value");
 			return false;
 		}
 		
 		if($('input[id=user_password]').val().trim()!=$('input[id=reenter_password]').val().trim()){
+			$("#message").show();
 			$("#message").html("Passwords do not match");
 			return false;
 		}

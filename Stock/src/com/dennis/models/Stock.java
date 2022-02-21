@@ -143,8 +143,6 @@ public class Stock {
 			stockId = p.stock_id;
 		}
 
-
-
 		Connection conn = DB.getConnection();
 		try {
 

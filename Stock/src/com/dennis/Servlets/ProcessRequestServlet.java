@@ -61,7 +61,10 @@ public class ProcessRequestServlet extends HttpServlet {
 
 		authMethods(request, response, headers, action);
 
-		transactionMethods(request, response, headers, action);
+		long userId = User.getUserInSession(request);
+		if(userId>0) {
+			transactionMethods(request, response, headers, action);
+		}
 
 	}// end of do post
 
@@ -70,7 +73,8 @@ public class ProcessRequestServlet extends HttpServlet {
 		String user_name = "";
 		String user_password = "";
 		HttpSession session = request.getSession();
-
+		
+		
 		if (headers.get("user_name") != null) {
 			user_name = headers.get("user_name").trim();
 			user_password = headers.get("user_password").trim();
@@ -80,11 +84,12 @@ public class ProcessRequestServlet extends HttpServlet {
 			if (action.equals("login")) {
 
 				long user_id = User.getUser(user_name, user_password);
+				Util.log("Incoming request from ip " + Util.getClientIpAddress(request) + " user = " + user_name);
 
 				if (user_id > 0) {
 					session.setAttribute("user_id", user_id);
 					Util.sendResponseToClient(response, "{\"logged_in\":true}");
-				}else {
+				} else {
 					Util.sendResponseToClient(response, "{\"logged_in\":false}");
 				}
 
@@ -95,35 +100,38 @@ public class ProcessRequestServlet extends HttpServlet {
 
 			} else if (action.equals("createUser")) {
 
-				User ind = new User(0, user_name, "", "", "", "", user_password, "");
+				User user = new User(0, user_name, "", "", "", "", user_password, "");
 
-				if (User.checkExistingUserName(ind)) {
+				if (User.checkExistingUserName(user)) {
 					Util.sendResponseToClient(response, "{\"user_created\":\"user_name_exists\"}");
-				} else if (User.insertUpdateUserRecord(ind) > 0) {
-					Util.sendResponseToClient(response, "{\"user_created\":true}");
 				} else {
-					Util.sendResponseToClient(response, "{\"user_created\":false}");
+					long user_id = User.insertUpdateUserRecord(user);
+					if (user_id > 0) {
+						session.setAttribute("user_id", user_id);
+						Util.sendResponseToClient(response, "{\"user_created\":true}");
+					} else {
+						Util.sendResponseToClient(response, "{\"user_created\":false}");
+					}
 				}
+					
 
 			} else if (action.equals("change_password")) {
-				
+
 				long user_id = User.getUserInSession(request);
 
 				if (user_id > 0) {
 					user_password = headers.get("user_password").trim();
 					String user_password_new = headers.get("user_password_new").trim();
-					
-					if(User.changePassword(user_id, user_password, user_password_new)>0) {
+
+					if (User.changePassword(user_id, user_password, user_password_new) > 0) {
 						Util.sendResponseToClient(response, "{\"password_changed\":true}");
-					}else {
+					} else {
 						Util.sendResponseToClient(response, "{\"password_changed\":false}");
 					}
-					
-				}else {
+
+				} else {
 					Util.sendResponseToClient(response, "{\"password_changed\":false}");
 				}
-				
-				
 			}
 
 		} catch (Exception e) {
@@ -133,6 +141,8 @@ public class ProcessRequestServlet extends HttpServlet {
 
 	void transactionMethods(HttpServletRequest request, HttpServletResponse response, Map<String, String> headers, String action) {
 		long userId = User.getUserInSession(request);
+		Util.log("Incoming request from ip " + Util.getClientIpAddress(request) + " userId = " + userId);
+
 		try {
 			if (action.equals("get_stock_data")) {
 				Map results = Trade.getLines(userId);

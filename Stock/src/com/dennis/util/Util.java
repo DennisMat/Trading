@@ -22,8 +22,17 @@ import javax.servlet.http.HttpSession;
 import com.dennis.db.DB;
 import com.dennis.models.User;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
 public class Util {
 
+	private static final Logger log = Logger.getLogger(Util.class.getName());
+	
 	public static void sendResponseToClient(HttpServletResponse response, String responseString) {
 
 		try {
@@ -38,6 +47,20 @@ public class Util {
 		}
 	}
 
+	public static void log(String message) {
+		if(log.getLevel()!=Level.INFO) {
+			 log.setLevel(Level.INFO);
+		}
+		log.info(message);
+	}
+	
+	public static String getClientIpAddress(HttpServletRequest request) {
+	String ipAddress = request.getHeader("X-FORWARDED-FOR");  
+	if (ipAddress == null) {  
+	    ipAddress = request.getRemoteAddr();  
+	}
+	return ipAddress;
+	}
 
 
 	public static boolean stringIsNullOrEmpty(String str) {
