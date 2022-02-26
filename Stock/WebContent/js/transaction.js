@@ -22,8 +22,7 @@ function fillStockData(stocksData){
 	
 	$('#stockListDiv').html("");
 	$('#stocksTransactionsDiv').html("");
-	$("#mainContentsPlaceHolder").html(
-			'<div class="sectionStyle">Stock transactions<div>');
+	$("#mainContentsPlaceHolder").html('<div class="sectionStyle">Stock transactions<div>');
 
 	
 	  for (var stockSymbol in stocksData) {
@@ -40,15 +39,15 @@ function fillTableData(stockSymbol,linesData){
 
 	
 	$('#stocksTransactionsDiv').append(
-			 '<div style="border-style: solid;">'
-			+'<div id="stock_name_'+stockSymbol+'" style="text-align: left;">Stock Symbol: '+ stockSymbol+'</div>'
-			+'<div><table id="singleStockTable_'+stockSymbol+'" class="display compact" style="width: 100%"></table></div>'
-			+'<div id="buyAdvice_'+stockSymbol+'"></div>'
-			+'<div id="sellAdvice_'+stockSymbol+'"></div>'
-        	+'<div id="div_current_advice_'+stockSymbol+'">Current stock price: <input type="number" id="current_stock_price_'+stockSymbol
-        	+'"> <input type="submit" id="current_stock_price_submit_button_'+stockSymbol
-        	+'" value="Find"><span id="current_advice_'+stockSymbol+'"></span> </div>'
-       	+ '<div style="height: 120px;"></div>' 
+		'<div style="border-style: solid; clear: left;">'
+					+'<div id="stock_name_'+stockSymbol+'" style="text-align: left;color:blue">Stock Symbol: <em>'+ stockSymbol+'</em></div>'
+					+'<div><table id="singleStockTable_'+stockSymbol+'" class="display compact" style="width: 100%"></table></div>'
+					+'<div id="buyAdvice_'+stockSymbol+'"></div>'
+					+'<div id="sellAdvice_'+stockSymbol+'"></div>'
+		        	+'<div id="div_current_advice_'+stockSymbol+'">Current stock price: <input type="number" id="current_stock_price_'+stockSymbol
+		        	+'"> <input type="submit" id="current_stock_price_submit_button_'+stockSymbol
+		        	+'" value="Find"><span id="current_advice_'+stockSymbol+'"></span> </div>'
+		        	+ '<div style="height: 120px;"></div>' 
        	+ '</div>'
 	);
 
@@ -134,8 +133,8 @@ function fillTableData(stockSymbol,linesData){
 		
 	});
 	
-	var buyAdvice="Buy "+ linesData.buyPredict.sharesBoughtSold  +" shares for " + linesData.buyPredict.stockPrice 
-	var sellAdvice="Sell "+ linesData.sellPredict.sharesBoughtSold  +" shares for " + linesData.sellPredict.stockPrice 
+	var buyAdvice="If share price becomes " + linesData.buyPredict.stockPrice +" buy "+ linesData.buyPredict.sharesBoughtSold  +" shares";
+	var sellAdvice="If share price becomes " + linesData.sellPredict.stockPrice +" sell "+ linesData.sellPredict.sharesBoughtSold  +" shares";
 	
 	$( "#buyAdvice_"+stockSymbol ).text(buyAdvice);
 	$( "#sellAdvice_"+stockSymbol).text(sellAdvice);

@@ -62,7 +62,7 @@ public class ProcessRequestServlet extends HttpServlet {
 		authMethods(request, response, headers, action);
 
 		long userId = User.getUserInSession(request);
-		if(userId>0) {
+		if (userId > 0) {
 			transactionMethods(request, response, headers, action);
 		}
 
@@ -73,8 +73,7 @@ public class ProcessRequestServlet extends HttpServlet {
 		String user_name = "";
 		String user_password = "";
 		HttpSession session = request.getSession();
-		
-		
+
 		if (headers.get("user_name") != null) {
 			user_name = headers.get("user_name").trim();
 			user_password = headers.get("user_password").trim();
@@ -113,7 +112,6 @@ public class ProcessRequestServlet extends HttpServlet {
 						Util.sendResponseToClient(response, "{\"user_created\":false}");
 					}
 				}
-					
 
 			} else if (action.equals("change_password")) {
 
